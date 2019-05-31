@@ -13,8 +13,6 @@
 uint16_t adc_noise[ADCS] = { 3, 3 };
 uint16_t adc_value[ADCS] = { 0, 0 };
 
-static const uint32_t limit = 3000;
-
 enum {
 	IRQ_TRIGGER = 0,
 	IRQ_UPDATE,
@@ -32,8 +30,8 @@ static void adc_trigger(struct avr_irq_t * irq, uint32_t value, void * param) {
 			else
 				val += noise;
 		}
-		if (val > limit)
-			val = limit;
+		if (val > voltage)
+			val = voltage;
 		avr_raise_irq(irq + IRQ_UPDATE, val);
 	}
 }

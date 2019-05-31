@@ -1,2 +1,4 @@
 spicsim
 obj-*
+cmdline.h
+cmdline.c

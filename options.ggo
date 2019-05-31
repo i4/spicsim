@@ -1,0 +1,48 @@
+package "SPiCsim"
+version "3.1"
+purpose "Improved SPiCboard v3 Simulator"
+usage "spicsim [OPTIONS] ELFFILE"
+description "Simulate any SPiCboard binary"
+versiontext "(c) 2019 by Bernhard Heinloth <heinloth@cs.fau.de>"
+
+args "-G -u"
+
+section "Debugging"
+
+option "gdb" g "GDB Server listening on TCP Port" argoptional default="1234" short optional
+option "vcd" v "Value Change Dump for GTK wave (works like a Logic Analyzer)" optional
+option "vcd-flush" - "VCD File flushing periond (in us)" default="1000000" int optional dependon="vcd"
+
+
+section "User Interface Mode"
+
+defmode "Terminal"
+modeoption "terminal" t "Output in Terminal" values="ansi","utf8" enum default="ansi" mode="Terminal" required
+modeoption "color" c "Terminal Colors" values="none","16","256","truecolor" enum default="16" mode="Terminal" optional 
+
+defmode "OpenGL"
+modeoption "opengl" o "Output in OpenGL window" mode="OpenGL" required
+modeoption "skin" s "Skin" values="spicboard","coffee" enum default="spicboard" mode="OpenGL" optional 
+modeoption "display" d "Enable SSD1306 OLED Display" mode="OpenGL"
+
+
+section "Communication"
+defgroup "Serial" groupdesc="Only UART0 is used" 
+groupoption "pty" T "Use Pseudo TTY for serial communication" argoptional string group="Serial" optional
+groupoption "udp" U "Use the User Datagram Protocol for serial communication" argoptional default="1235" short group="Serial" optional
+groupoption "pipe" P "Use a named pipe for serial communication" argoptional default="/var/run/spicsim" string group="Serial" optional
+
+
+section "Analog-to-digital converter"
+
+option "poti-value" - "Initial voltage of potentiometer (in mV)" default="2500" int optional
+option "poti-noise" - "Maximum noise level of potentiometer (in mV)" default="3" int optional 
+option "photo-value" - "Initial voltage of photo sensor (in mV)" default="1000" int optional
+option "photo-noise" - "Maximum noise level of photo sensor (in mV)" default="20" int optional 
+
+
+section "Microcontroller emulation internals" sectiondesc="Changing those settings might mess things up and prevent a working emulation"
+
+option "frequency" F "Base frequency for the microcontroller in Hz" default="16000000" int optional
+option "avr" A "AVR microcontroller model" default="atmega328pb" string optional
+option "voltage" V "Reference voltage (in mV)" default="5000" int optional

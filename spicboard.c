@@ -19,13 +19,15 @@
 #include "spicboard_hc595.h"
 
 state_t sb;
+
+const unsigned voltage = 5000; // mV
+
 uint16_t gdb_port = 1234;
 bool gdb_enable = false;
 cycles_t current_cycle = 0;
 cycles_t print_cycle = 0;
 
 static avr_t * avr = NULL;
-// TODO: static state_t sb_old;
 
 static void pin_changed_hook(struct avr_irq_t * irq, uint32_t value, void * param) {
 	*(bool*)param = value;
@@ -79,6 +81,7 @@ bool spicboard_load(char * fname){
 	elf_firmware_t f;
 	elf_read_firmware(fname, &f);
 	f.frequency = 16000000;
+	f.vcc = f.avcc = f.aref = voltage;
 
 	avr = avr_make_mcu_by_name("atmega328pb");
 	if (avr) {

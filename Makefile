@@ -1,4 +1,7 @@
-target=spicsim
+TARGET=spicsim
+ARGPASER=cmdline
+SOURCES=$(sort $(wildcard *.c) $(ARGPASER).c)
+
 
 override SIMAVR=simavr/simavr
 IPATH=.
@@ -7,22 +10,28 @@ VPATH=.
 
 LDFLAGS += -lpthread -lm
 
-all: obj ${target}
+all: obj ${TARGET}
 
 include simavr/Makefile.common
+LIBSIMAVR = $(SIMAVR)/${OBJ}/libsimavr.so.1
+OBJECTS=$(addprefix $(OBJ)/, $(SOURCES:.c=.o))
 
-board = ${OBJ}/${target}.elf
+$(SIMAVR):
+	git submodule update --init --recursive 
 
-libsimavr = ${SIMAVR}/${OBJ}/libsimavr.so.1
-
-${libsimavr}:
+$(LIBSIMAVR): $(SIMAVR)
 	$(MAKE) -C simavr
 
-${board} : ${OBJ}/spicboard_adc.o ${OBJ}/spicboard_button.o ${OBJ}/spicboard_hc595.o ${OBJ}/spicboard.o ${OBJ}/tui.o ${OBJ}/${target}.o
+$(ARGPASER).o: $(ARGPASER).c $(ARGPASER).h
 
-${target}: ${board} ${libsimavr} 
+$(ARGPASER).c $(ARGPASER).h: options.ggo
+	gengetopt -i $< -F $(ARGPASER)
+
+$(OBJ)/$(TARGET).elf: $(OBJECTS)
+
+${TARGET}: $(OBJ)/$(TARGET).elf $(LIBSIMAVR)
 	@echo LN $@
-	@ln -s $< $@
+	@ln -f -s $< $@
 
 clean: clean-${OBJ}
-	rm -rf *.a ${target} *.vcd
+	rm -rf *.a ${TARGET} *.vcd

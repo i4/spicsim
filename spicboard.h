@@ -35,6 +35,8 @@ typedef struct {
 	bool btn[BUTTONS];
 } state_t;
 
+extern const unsigned voltage;
+
 void sb_led_update(led_t *, bool);
 double sb_led_lightness(led_t *);
 
