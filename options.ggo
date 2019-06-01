@@ -5,25 +5,29 @@ usage "spicsim [OPTIONS] ELFFILE"
 description "Simulate any SPiCboard binary"
 versiontext "(c) 2019 by Bernhard Heinloth <heinloth@cs.fau.de>"
 
-args "-G -u"
+args "-G -u -a args_info"
 
 section "Debugging"
 
 option "gdb" g "GDB Server listening on TCP Port" argoptional default="1234" short optional
-option "vcd" v "Value Change Dump for GTK wave (works like a Logic Analyzer)" optional
+option "vcd" v "Value Change Dump for GTK wave (works like a Logic Analyzer)" string argoptional default="/var/run/spicsim.vcd" optional
 option "vcd-flush" - "VCD File flushing periond (in us)" default="1000000" int optional dependon="vcd"
 
 
 section "User Interface Mode"
 
+option "refresh" r "Refresh rate (in Hz)" default="60" short optional
+option "display" d "Enable SSD1306 OLED Display" optional
+
 defmode "Terminal"
-modeoption "terminal" t "Output in Terminal" values="ansi","utf8" enum default="ansi" mode="Terminal" required
+modeoption "terminal" t "Output in Terminal" values="ansi","utf8" enum argoptional default="ansi" mode="Terminal" required
 modeoption "color" c "Terminal Colors" values="none","16","256","truecolor" enum default="16" mode="Terminal" optional 
+modeoption "noesc" e "Disable ANSI escape codes (implies --color=`none`)" mode="Terminal" optional
+modeoption "lightness" l "LED lightness (between 0 and 1) wich should be visible as 'active' LED" float default="0.1" mode="Terminal" optional
 
 defmode "OpenGL"
 modeoption "opengl" o "Output in OpenGL window" mode="OpenGL" required
 modeoption "skin" s "Skin" values="spicboard","coffee" enum default="spicboard" mode="OpenGL" optional 
-modeoption "display" d "Enable SSD1306 OLED Display" mode="OpenGL"
 
 
 section "Communication"

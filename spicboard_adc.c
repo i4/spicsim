@@ -10,8 +10,8 @@
 #include "avr_adc.h"
 #include "sim_irq.h"
 
-uint16_t adc_noise[ADCS] = { 3, 3 };
-uint16_t adc_value[ADCS] = { 0, 0 };
+uint16_t adc_noise[ADCS];
+uint16_t adc_value[ADCS];
 
 enum {
 	IRQ_TRIGGER = 0,

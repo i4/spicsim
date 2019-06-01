@@ -3,14 +3,11 @@
 #include <assert.h>
 
 #include "tui.h"
+#include "spicsim.h"
 #include "spicboard.h"
 
 #define xstr(s) str(s)
 #define str(s) #s
-
-tui_type_t tui_type = TUI_TYPE_ANSI;
-tui_color_t tui_color = TUI_COLOR_256;
-bool ansi_escape = true;
 
 enum SYMBOL {
 	TUI_TOP_LEFT,
@@ -57,50 +54,53 @@ const int color256_palette[4][6] = {
 
 
 static int tui_print_led(led_t * led, enum COLOR color, char * append, enum SYMBOL on, enum SYMBOL off) {
-	char ** sym = tui[tui_type];
+	char ** sym = tui[args_info.terminal_arg == terminal_arg_utf8 ? 1 : 0];
 
-	switch (tui_color) {
-		case TUI_COLOR_NONE:
+	switch (args_info.color_arg) {
+		case color_arg_none:
 			return printf("%s%s", led->active ? sym[on] : " ", append);
-		case TUI_COLOR_ANSI:
-			if (led->active)
-				return printf("\e[3%dm%s\e[0m%s", 1 + (int)color, sym[on], append);
-			else
-				return printf("\e[30m%s\e[0m%s", sym[off], append);
-		case TUI_COLOR_256:
+		case color_arg_256:
 			{
-				int brightness = (int)(sb_led_lightness(led) * 6.0);
-				return printf("\e[38;5;%dm%s\e[0m%s", color256_palette[color][brightness], led->active ? sym[on] : sym[off], append);
+				double lightness = sb_led_lightness(led);
+				int brightness = (int)(lightness * 6.0);
+				return printf("\e[38;5;%dm%s\e[0m%s", color256_palette[color][brightness], lightness >= args_info.lightness_arg ? sym[on] : sym[off], append);
 			}
-		case TUI_COLOR_TRUE:
+		case color_arg_truecolor:
 			{
-				int r,g,b,c = (int)round(sb_led_lightness(led) * 255);
+				double lightness = sb_led_lightness(led);
+				int r,g,b,c = (int)(lightness * 255.0);
 				switch (color) {
 					case RED:    r = c; g = 0; b = 0; break;
 					case GREEN:  r = 0; g = c; b = 0; break;
 					case YELLOW: r = c; g = c; b = 0; break;
 					case BLUE:   r = 0; g = 0; b = c; break;
 				}
-				return printf("\e[38;2;%d;%d;%dm%s\e[0m%s", r, g, b, led->active ? sym[TUI_LED_ON] : sym[TUI_LED_OFF], append);
+				return printf("\e[38;2;%d;%d;%dm%s\e[0m%s", r, g, b, lightness >= args_info.lightness_arg ? sym[TUI_LED_ON] : sym[TUI_LED_OFF], append);
 			}
+		default: // color_arg_16:
+			if (sb_led_lightness(led) > args_info.lightness_arg)
+				return printf("\e[3%dm%s\e[0m%s", 1 + (int)color, sym[on], append);
+			else
+				return printf("\e[30m%s\e[0m%s", sym[off], append);
+
 	}
 	assert(false);
 	return 0;
 }
 
-#define IFANSI(EN) (ansi_escape ? "\e[" EN "m" : "")
-#define RESET (ansi_escape ? "\e[0m" : "")
+#define IFANSI(EN) (args_info.noesc_given ? "" : "\e[" EN "m")
+#define RESET IFANSI("0")
 #define symLED(COLOR, NUMBER, APPEND) tui_print_led(&sb.led[LED_ ## COLOR ## NUMBER], COLOR, APPEND, TUI_LED_ON, TUI_LED_OFF)
 #define sym7SEG(SEGMENT, NUMBER, APPEND) tui_print_led(&sb.seg[SEGMENT][NUMBER], RED, APPEND, TUI_7SEG_ ## NUMBER, TUI_7SEG_ ## NUMBER)
 #define symBTN(NUMBER) (sb.btn[NUMBER] == 0 ? sym[TUI_BUTTON_PRESSED] : sym[TUI_BUTTON_RELEASED])
 void tui_print(){
-	char ** sym = tui[tui_type];
+	char ** sym = tui[args_info.terminal_arg == terminal_arg_utf8 ? 1 : 0];
 
-	if (ansi_escape){
-		puts("\e[11F");
-	} else {
-		tui_color = TUI_COLOR_NONE;
+	if (args_info.noesc_given){
+		args_info.color_arg = color_arg_none;
 		puts("\n\n");
+	} else {
+		puts("\e[11F");
 	}
 
 	printf("\t%s%s%s\n\t%s ", sym[TUI_TOP_LEFT], sym[TUI_HORIZONTAL], sym[TUI_TOP_RIGHT], sym[TUI_VERTICAL]);

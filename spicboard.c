@@ -17,6 +17,7 @@
 #include "spicboard_adc.h"
 #include "spicboard_button.h"
 #include "spicboard_hc595.h"
+#include "spicsim.h"
 
 state_t sb;
 
@@ -80,15 +81,19 @@ static void * avr_run_thread(void * oaram){
 bool spicboard_load(char * fname){
 	elf_firmware_t f;
 	elf_read_firmware(fname, &f);
-	f.frequency = 16000000;
-	f.vcc = f.avcc = f.aref = voltage;
+	f.frequency = args_info.frequency_arg;
+	f.vcc = f.avcc = f.aref = args_info.voltage_arg;
 
-	avr = avr_make_mcu_by_name("atmega328pb");
+	avr = avr_make_mcu_by_name(args_info.avr_arg);
 	if (avr) {
 		avr_init(avr);
 		avr_load_firmware(avr, &f);
 
 		// POTI & PHOTO
+		adc_value[POTI] = args_info.poti_value_arg;
+		adc_noise[POTI] = args_info.poti_noise_arg;
+		adc_value[PHOTO] = args_info.photo_value_arg;
+		adc_noise[PHOTO] = args_info.photo_noise_arg;
 		adc_init(avr);
 
 		// Buttons
@@ -111,8 +116,9 @@ bool spicboard_load(char * fname){
 
 
 		// even if not setup at startup, activate gdb if crashing
-		avr->gdb_port = gdb_port;
-		if (gdb_enable) {
+		avr->gdb_port = args_info.gdb_arg;
+		if (args_info.gdb_given != 0) {
+			fprintf(stderr, "Starting GDB on port %hd...\n", avr->gdb_port);
 			//avr->state = cpu_Stopped;
 			avr_gdb_init(avr);
 		}

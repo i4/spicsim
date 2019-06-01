@@ -17,21 +17,23 @@ LIBSIMAVR = $(SIMAVR)/${OBJ}/libsimavr.so.1
 OBJECTS=$(addprefix $(OBJ)/, $(SOURCES:.c=.o))
 
 $(SIMAVR):
-	git submodule update --init --recursive 
+	@echo GIT SUBMODULE $@
+	$(E)git submodule update --init --recursive 
 
 $(LIBSIMAVR): $(SIMAVR)
-	$(MAKE) -C simavr
+	$(MAKE) -C simavr build-simavr
 
 $(ARGPASER).o: $(ARGPASER).c $(ARGPASER).h
 
 $(ARGPASER).c $(ARGPASER).h: options.ggo
-	gengetopt -i $< -F $(ARGPASER)
+	@echo GENGETOPT $@
+	$(E)gengetopt -i $< -F $(ARGPASER)
 
 $(OBJ)/$(TARGET).elf: $(OBJECTS)
 
 ${TARGET}: $(OBJ)/$(TARGET).elf $(LIBSIMAVR)
-	@echo LN $@
-	@ln -f -s $< $@
+	@echo "LN $< -> $@"
+	$(E)ln -f -s $< $@
 
 clean: clean-${OBJ}
-	rm -rf *.a ${TARGET} *.vcd
+	rm -rf *.a ${TARGET} *.vcd $(ARGPASER).c $(ARGPASER).h

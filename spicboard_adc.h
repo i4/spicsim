@@ -12,7 +12,8 @@ enum ADC {
 	ADCS
 };
 
-extern uint16_t noise[ADCS];
+extern uint16_t adc_noise[ADCS];
+extern uint16_t adc_value[ADCS];
 
 bool adc_init(struct avr_t *);
 void adc_set(enum ADC, uint16_t);

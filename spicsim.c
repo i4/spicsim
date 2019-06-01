@@ -19,14 +19,13 @@
 #include "sim_gdb.h"
 #include "avr_timer.h"
 
-#include "cmdline.h"
-
+#include "spicsim.h"
 #include "spicboard.h"
 #include "spicboard_adc.h"
 #include "spicboard_button.h"
 #include "tui.h"
 
-static struct gengetopt_args_info args_info;
+struct args_info args_info;
 
 int main(int argc, char *argv[]){
 
