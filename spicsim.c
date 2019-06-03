@@ -49,13 +49,23 @@ int main(int argc, char *argv[]){
 		newt.c_lflag &= ~(ICANON);
 		tcsetattr( STDIN_FILENO, TCSANOW, &newt);
 		const int KEYBUF = 10;
+
+		struct timeval timeout_init;
+		if (args_info.refresh_arg == 1){
+			timeout_init.tv_sec = 1;
+			timeout_init.tv_usec = 0;
+		} else {
+			timeout_init.tv_sec = 0;
+			timeout_init.tv_usec = 1000000 / args_info.refresh_arg;
+		}
+
 		while(1){
 
 			fd_set fds;
 			FD_ZERO(&fds);
 			FD_SET(STDIN_FILENO, &fds);
 
-			struct timeval timeout = { .tv_sec = 0, .tv_usec = 100000 } ;
+			struct timeval timeout = timeout_init;
 
 			errno = 0;
 			int rv = select(STDIN_FILENO + 1, &fds, NULL, NULL, &timeout);
