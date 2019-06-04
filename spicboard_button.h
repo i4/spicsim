@@ -6,6 +6,7 @@
 enum BUTTON {
 	BUTTON0,
 	BUTTON1,
+	BUTTON_USER,
 	BUTTONS
 };
 

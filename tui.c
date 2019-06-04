@@ -53,12 +53,12 @@ const int color256_palette[4][6] = {
 
 
 
-static int tui_print_led(led_t * led, enum COLOR color, char * append, enum SYMBOL on, enum SYMBOL off) {
+static int tui_print_led(enum LED led, enum COLOR color, char * append, enum SYMBOL on, enum SYMBOL off) {
 	char ** sym = tui[args_info.terminal_arg == terminal_arg_utf8 ? 1 : 0];
 
 	switch (args_info.color_arg) {
 		case color_arg_none:
-			return printf("%s%s", led->active ? sym[on] : " ", append);
+			return printf("%s%s", sb.led[led].active ? sym[on] : " ", append);
 		case color_arg_256:
 			{
 				double lightness = sb_led_lightness(led);
@@ -90,8 +90,8 @@ static int tui_print_led(led_t * led, enum COLOR color, char * append, enum SYMB
 
 #define IFANSI(EN) (args_info.noesc_given ? "" : "\e[" EN "m")
 #define RESET IFANSI("0")
-#define symLED(COLOR, NUMBER, APPEND) tui_print_led(&sb.led[LED_ ## COLOR ## NUMBER], COLOR, APPEND, TUI_LED_ON, TUI_LED_OFF)
-#define sym7SEG(SEGMENT, NUMBER, APPEND) tui_print_led(&sb.seg[SEGMENT][NUMBER], RED, APPEND, TUI_7SEG_ ## NUMBER, TUI_7SEG_ ## NUMBER)
+#define symLED(COLOR, NUMBER, APPEND) tui_print_led(LED_ ## COLOR ## NUMBER, COLOR, APPEND, TUI_LED_ON, TUI_LED_OFF)
+#define sym7SEG(SEGMENT, NUMBER, APPEND) tui_print_led(LED_7SEG_ ## SEGMENT ## _ ## NUMBER, RED, APPEND, TUI_7SEG_ ## NUMBER, TUI_7SEG_ ## NUMBER)
 #define symBTN(NUMBER) (sb.btn[NUMBER] == 0 ? sym[TUI_BUTTON_PRESSED] : sym[TUI_BUTTON_RELEASED])
 void tui_print(){
 	char ** sym = tui[args_info.terminal_arg == terminal_arg_utf8 ? 1 : 0];

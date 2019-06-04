@@ -30,8 +30,8 @@ static void hc595_latch(struct avr_irq_t * irq, uint32_t value, void * param) {
 	if (irq->value && !value){
 		unsigned active = (spi_byte >> 7) & 1;
 		for (unsigned i = 0; i < 7; i++) {
-			sb_led_update(&(sb.seg[active][i]), ~(spi_byte >> i) & 1);
-			sb_led_update(&(sb.seg[1 - active][i]), false);
+			sb_led_update((active ? LED_7SEG_1_0 : LED_7SEG_0_0) + i, ~(spi_byte >> i) & 1);
+			sb_led_update((active ? LED_7SEG_0_0 : LED_7SEG_1_0) + i, false);
 		}
 	}
 }

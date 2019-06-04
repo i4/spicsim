@@ -7,7 +7,7 @@
 #include "spicboard_adc.h"
 #include "spicboard_button.h"
 
-enum {
+enum LED {
 	LED_RED0,
 	LED_YELLOW0,
 	LED_GREEN0,
@@ -16,29 +16,46 @@ enum {
 	LED_YELLOW1,
 	LED_GREEN1,
 	LED_BLUE1,
+
+	LED_USER,
+
+	LED_7SEG_0_0,
+	LED_7SEG_0_1,
+	LED_7SEG_0_2,
+	LED_7SEG_0_3,
+	LED_7SEG_0_4,
+	LED_7SEG_0_5,
+	LED_7SEG_0_6,
+
+	LED_7SEG_1_0,
+	LED_7SEG_1_1,
+	LED_7SEG_1_2,
+	LED_7SEG_1_3,
+	LED_7SEG_1_4,
+	LED_7SEG_1_5,
+	LED_7SEG_1_6,
+
 	LEDS
 };
 
 typedef uint64_t cycles_t;
 
 typedef struct {
-	cycles_t last;
-	cycles_t total;
-	cycles_t print;
 	bool active;
+	cycles_t total; // total active cycles
+	cycles_t since; // active since
 } led_t;
 
 typedef struct {
 	led_t led[LEDS];
-	led_t seg[2][7];
 	uint16_t adc[ADCS];
 	bool btn[BUTTONS];
 } state_t;
 
 extern const unsigned voltage;
 
-void sb_led_update(led_t *, bool);
-double sb_led_lightness(led_t *);
+void sb_led_update(enum LED, bool);
+double sb_led_lightness(enum LED);
 
 extern state_t sb;
 
