@@ -5,6 +5,7 @@
 #include "tui.h"
 #include "spicsim.h"
 #include "spicboard.h"
+#include "spicboard_led.h"
 
 #define xstr(s) str(s)
 #define str(s) #s
@@ -61,13 +62,13 @@ static int tui_print_led(enum LED led, enum COLOR color, char * append, enum SYM
 			return printf("%s%s", sb.led[led].active ? sym[on] : " ", append);
 		case color_arg_256:
 			{
-				double lightness = sb_led_lightness(led);
+				double lightness = led_lightness(led);
 				int brightness = (int)(lightness * 6.0);
 				return printf("\e[38;5;%dm%s\e[0m%s", color256_palette[color][brightness], lightness >= args_info.lightness_arg ? sym[on] : sym[off], append);
 			}
 		case color_arg_truecolor:
 			{
-				double lightness = sb_led_lightness(led);
+				double lightness = led_lightness(led);
 				int r,g,b,c = (int)(lightness * 255.0);
 				switch (color) {
 					case RED:    r = c; g = 0; b = 0; break;
@@ -78,7 +79,7 @@ static int tui_print_led(enum LED led, enum COLOR color, char * append, enum SYM
 				return printf("\e[38;2;%d;%d;%dm%s\e[0m%s", r, g, b, lightness >= args_info.lightness_arg ? sym[TUI_LED_ON] : sym[TUI_LED_OFF], append);
 			}
 		default: // color_arg_16:
-			if (sb_led_lightness(led) > args_info.lightness_arg)
+			if (led_lightness(led) > args_info.lightness_arg)
 				return printf("\e[3%dm%s\e[0m%s", 1 + (int)color, sym[on], append);
 			else
 				return printf("\e[30m%s\e[0m%s", sym[off], append);
@@ -135,8 +136,6 @@ void tui_print(){
 	printf("%s %s\n\t%s ", symBTN(0), sym[TUI_VERTICAL], sym[TUI_VERTICAL]);
 	symLED(BLUE,1," ");
 	printf("%s%4dmV%s         %s %s\n\t%s%s%s\n", IFANSI("1;37"), sb.adc[POTI], RESET, symBTN(1), sym[TUI_VERTICAL],sym[TUI_BOTTOM_LEFT], sym[TUI_HORIZONTAL], sym[TUI_BOTTOM_RIGHT]);
-
-	print_cycle = current_cycle;
 }
 
 
