@@ -1,0 +1,17 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+    <file>icons/advanced_hide.svg</file>
+    <file>icons/advanced_show.svg</file>
+    <file>icons/display_hide.svg</file>
+    <file>icons/display_show.svg</file>
+    <file>icons/exit.svg</file>
+    <file>icons/help.svg</file>
+    <file>icons/load.svg</file>
+    <file>icons/reset.svg</file>
+    <file>icons/record_start.svg</file>
+    <file>icons/record_stop.svg</file>
+    <file>icons/save.svg</file>
+    <file>icons/vcdopen.svg</file>
+</qresource>
+</RCC>
