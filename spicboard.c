@@ -19,6 +19,7 @@
 #include "spicboard_button.h"
 #include "spicboard_led.h"
 #include "spicboard_hc595.h"
+#include "spicboard_ssd1306.h"
 #include "spicboard_vcd.h"
 #include "spicsim.h"
 
@@ -62,6 +63,10 @@ bool spicboard_init(){
 		avr_init(avr);
 		return true;
 }
+void logger(struct avr_t *avr, const int level, const char *format, va_list ap){
+	printf("\t\t\t\t\t\t\t\t");
+	vprintf(format, ap);
+}
 
 bool spicboard_load(char * fname){
 	elf_firmware_t f;
@@ -73,7 +78,7 @@ bool spicboard_load(char * fname){
 	if (avr) {
 		avr_init(avr);
 		avr_load_firmware(avr, &f);
-
+//		avr_global_logger_set(logger);
 		// POTI & PHOTO
 		adc_value[POTI] = args_info.poti_value_arg;
 		adc_noise[POTI] = args_info.poti_noise_arg;
@@ -89,6 +94,8 @@ bool spicboard_load(char * fname){
 
 		// connect all the pins to our callback
 		led_init(avr);
+
+		ssd1306_init(avr);
 
 		// even if not setup at startup, activate gdb if crashing
 		avr->gdb_port = args_info.gdb_arg;

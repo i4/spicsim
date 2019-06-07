@@ -6,6 +6,7 @@
 #include "spicsim.h"
 #include "spicboard.h"
 #include "spicboard_led.h"
+#include "spicboard_ssd1306.h"
 
 #define xstr(s) str(s)
 #define str(s) #s
@@ -34,16 +35,15 @@ enum SYMBOL {
 	TUI_SYMBOLS
 };
 
-
 static char * tui[2][TUI_SYMBOLS]= {
 	{"+","----------------------","+","|","+","+","O","O","o","o","[ ]","[X]","_","|","|","_","|","|","_"},
 	{"┌","──────────────────────","┐","│","└","┘","○","●","◌","◉"," □ "," ■ ","▁","▏","▏","▁","▕","▕","▁" }
 };
 
+// Color
 enum COLOR {
 	RED, GREEN, YELLOW, BLUE
 };
-
 
 const int color256_palette[4][6] = {
 	{ 16, 52,  88, 124, 160, 196 },
@@ -52,6 +52,78 @@ const int color256_palette[4][6] = {
 	{ 16, 17,  18,  19,  20,  21 },
 };
 
+// Display 
+static char * ublock[] = { " ", "▘","▖","▌", "▝","▀","▞","▛", "▗","▚","▄","▙", "▐","▜","▟","█" };
+
+static const int pages = 8;
+static const int rows = 64;
+static const int cols = 128;
+
+static void tui_display(){
+	ssd1306_set_flag(SSD1306_FLAG_DIRTY, 0);
+	const uint8_t vertical = ssd1306_get_flag(SSD1306_FLAG_SEGMENT_REMAP_0);
+	const uint8_t horizontal = ssd1306_get_flag(SSD1306_FLAG_COM_SCAN_NORMAL);
+	bool invert = ssd1306_get_flag(SSD1306_FLAG_DISPLAY_INVERTED) == 0;
+	bool active = ssd1306_get_flag(SSD1306_FLAG_DISPLAY_ON);
+	
+	uint8_t buf[rows][cols];
+	for (int p = 0; p < pages; p++){
+		for (int b = 0; b < 8; b++){
+			for (int c = 0; c < cols; c++){
+				uint8_t r = p * 8 + b;
+				buf[horizontal ? (rows - r - 1) : r][vertical ? (cols - c - 1) : c] = active ? (((oled.vram[p][c] >> b) & 1) == invert) : 0;
+			}
+		}
+	}
+
+	if (!args_info.noesc_given)
+		switch (args_info.color_arg) {
+			case color_arg_none: break;
+			case color_arg_16: printf("\e[37m"); break;
+			default: printf("\e[38;5;%dm",  (oled.contrast_register) / 17 + 240);
+		}
+	
+	if (args_info.terminal_arg == terminal_arg_utf8){
+		fputs("┌", stdout);
+		for (int c = 0; c < cols; c+=2)
+			fputs("─", stdout);
+		puts("┐");
+		for (int r = 0; r < rows; r+=2){
+			fputs("│", stdout);
+			for (int c = 0; c < cols; c+=2)
+				fputs(ublock[buf[r][c] | (buf[r + 1][c] << 1) | (buf[r][c + 1] << 2) | (buf[r + 1][c + 1] << 3)], stdout);
+			puts("│");
+		}
+		fputs("└", stdout);
+		for (int c = 0; c < cols; c+=2)
+			fputs("─", stdout);
+		puts("┘");
+	} else {
+		char line[cols + 3];
+		line[cols + 2]='\0';
+
+		line[0]='+';
+		line[cols + 1]='+';
+		for (int c = 1; c <= cols; c++)
+			line[c] = '-';
+		puts(line);
+				
+		line[0]='|';
+		line[cols + 1]='|';
+
+		for (int p = 0; p < rows; p++){
+			for (int c = 0; c < cols; c++)
+				line[c+1] = buf[p][c] == invert ? ' ' : 'X';
+			puts(line);
+		} 
+		
+		line[0]='+';
+		line[cols + 1]='+';
+		for (int c = 1; c <= cols; c++)
+			line[c] = '-';
+		puts(line);
+	}
+}
 
 
 static int tui_print_led(enum LED led, enum COLOR color, char * append, enum SYMBOL on, enum SYMBOL off) {
@@ -101,8 +173,14 @@ void tui_print(){
 		args_info.color_arg = color_arg_none;
 		puts("\n\n");
 	} else {
-		puts("\e[11F");
+		unsigned l = 10;
+		if (args_info.display_given)
+			l += args_info.terminal_arg == terminal_arg_utf8 ? 34 : 66;
+		printf("\e[%uF", l);
 	}
+
+	if (args_info.display_given)
+		tui_display();
 
 	printf("\t%s%s%s\n\t%s ", sym[TUI_TOP_LEFT], sym[TUI_HORIZONTAL], sym[TUI_TOP_RIGHT], sym[TUI_VERTICAL]);
 	symLED(RED,0,"   ");
@@ -137,5 +215,4 @@ void tui_print(){
 	symLED(BLUE,1," ");
 	printf("%s%4dmV%s         %s %s\n\t%s%s%s\n", IFANSI("1;37"), sb.adc[POTI], RESET, symBTN(1), sym[TUI_VERTICAL],sym[TUI_BOTTOM_LEFT], sym[TUI_HORIZONTAL], sym[TUI_BOTTOM_RIGHT]);
 }
-
 

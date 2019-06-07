@@ -2,11 +2,9 @@ TARGET=spicsim
 ARGPASER=cmdline
 SOURCES=$(sort $(wildcard *.c) $(ARGPASER).c)
 
-
 override SIMAVR=simavr/simavr
 IPATH=.
 IPATH+=${SIMAVR}/sim
-VPATH=.
 
 LDFLAGS += -lpthread -lm
 
