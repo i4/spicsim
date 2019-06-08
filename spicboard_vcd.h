@@ -3,9 +3,7 @@
 
 #include <stdbool.h>
 
-#include "sim_avr.h"
-
-bool vcd_init(struct avr_t *);
+bool vcd_init();
 bool vcd_start();
 void vcd_stop();
 void vcd_close();

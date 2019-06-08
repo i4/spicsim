@@ -4,7 +4,6 @@
 #include <stdbool.h>
 
 #include "spicboard_types.h"
-#include "sim_avr.h"
 
 enum LED {
 	LED_RED0,
@@ -43,7 +42,7 @@ typedef struct {
 	cycles_t since; // active since
 } led_t;
 
-void led_init(struct avr_t *);
+void led_init();
 void led_set(enum LED, bool);
 double led_lightness(enum LED);
 

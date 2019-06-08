@@ -2,8 +2,8 @@
 #define SPICBOARD_HC595_H
 
 #include <stdbool.h>
-#include "sim_avr.h"
 
-void hc595_init(struct avr_t * avr);
+
+void hc595_init();
 
 #endif /* SPICBOARD_HC595_H */

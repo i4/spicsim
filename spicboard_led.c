@@ -58,7 +58,7 @@ double led_lightness(enum LED led){
 	return L;
 }
 
-void led_init(avr_t * avr){
+void led_init(){
 	// connect all the pins to our callback
 	avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('B'), 0), led_changed_hook, (void*)LED_RED1);
 	avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('B'), 1), led_changed_hook, (void*)LED_YELLOW1);

@@ -37,74 +37,16 @@
  *
  */
 
-#ifndef __SSD1306_VIRT_H__
-#define __SSD1306_VIRT_H__
-
-#include "sim_avr.h"
-#include "sim_irq.h"
-
-#define SSD1306_VIRT_DATA			1
-#define SSD1306_VIRT_INSTRUCTION 		0
-
-#define SSD1306_I2C_ADDRESS			0x3C
-#define SSD1306_I2C_ADDRESS_MASK		0xfe
+#ifndef SPICBOARD_SSD1306_H
+#define SPICBOARD_SSD1306_H
 
 #define SSD1306_VIRT_PAGES			8
 #define SSD1306_VIRT_COLUMNS			128
 
-/* Fundamental commands. */
-#define SSD1306_VIRT_SET_CONTRAST		0x81
-#define SSD1306_VIRT_RESUME_TO_RAM_CONTENT	0xA4
-#define SSD1306_VIRT_IGNORE_RAM_CONTENT		0xA5
-#define SSD1306_VIRT_DISP_NORMAL		0xA6
-#define SSD1306_VIRT_DISP_INVERTED		0xA7
-#define SSD1306_VIRT_DISP_SUSPEND		0xAE
-#define SSD1306_VIRT_DISP_ON			0xAF
+static const int ssd1306_pages = 8;
+static const int ssd1306_rows = 64;
+static const int ssd1306_cols = 128;
 
-/* Scrolling commands */
-#define SSD1306_VIRT_SCROLL_RIGHT		0x26
-#define SSD1306_VIRT_SCROLL_LEFT		0x27
-#define SSD1306_VIRT_SCROLL_VR			0x29
-#define SSD1306_VIRT_SCROLL_VL			0x2A
-#define SSD1306_VIRT_SCROLL_OFF			0x2E
-#define SSD1306_VIRT_SCROLL_ON   		0x2F
-#define SSD1306_VIRT_VERT_SCROLL_A  		0xA3
-
-/* Address setting commands */
-#define SSD1306_VIRT_SET_COLUMN_LOW_NIBBLE	0x00
-#define SSD1306_VIRT_SET_COLUMN_HIGH_NIBBLE	0x10
-#define SSD1306_VIRT_MEM_ADDRESSING 		0x20
-#define SSD1306_VIRT_SET_COL_ADDR		0x21
-#define SSD1306_VIRT_SET_PAGE_ADDR		0x22
-#define SSD1306_VIRT_SET_PAGE_START_ADDR	0xB0
-
-/* Hardware config. commands */
-#define SSD1306_VIRT_SET_LINE			0x40
-#define SSD1306_VIRT_SET_SEG_REMAP_0  		0xA0
-#define SSD1306_VIRT_SET_SEG_REMAP_127		0xA1
-#define SSD1306_VIRT_MULTIPLEX       		0xA8
-#define SSD1306_VIRT_SET_COM_SCAN_NORMAL	0xC0
-#define SSD1306_VIRT_SET_COM_SCAN_INVERTED	0xC8
-#define SSD1306_VIRT_SET_OFFSET			0xD3
-#define SSD1306_VIRT_SET_PADS    		0xDA
-
-/* Timing & driving scheme setting commands */
-#define SSD1306_VIRT_SET_RATIO_OSC		0xD5
-#define SSD1306_VIRT_SET_CHARGE  		0xD9
-#define SSD1306_VIRT_SET_VCOM    		0xDB
-#define SSD1306_VIRT_NOP     			0xE3
-
-/* Charge pump command table */
-#define SSD1306_VIRT_CHARGE_PUMP    		0x8D
-#define SSD1306_VIRT_PUMP_ON     		0x14
-
-
-enum
-{
-	IRQ_SSD1306_TWI_IN,
-	IRQ_SSD1306_TWI_OUT,
-	IRQ_SSD1306_COUNT
-};
 
 enum
 {
@@ -137,9 +79,10 @@ struct ssd1306_virt_cursor_t
 	uint8_t column;
 };
 
+struct avr_irq_t;
 typedef struct ssd1306_t
 {
-	avr_irq_t * irq;
+	struct avr_irq_t * irq;
 	struct ssd1306_virt_cursor_t cursor;
 	uint8_t vram[SSD1306_VIRT_PAGES][SSD1306_VIRT_COLUMNS];
 	uint16_t flags;
@@ -169,7 +112,7 @@ static inline int ssd1306_get_flag(uint16_t bit) {
 	return (oled.flags & (1 << bit)) != 0;
 }
 
-void ssd1306_init (struct avr_t *);
+void ssd1306_init ();
 
 
 #endif

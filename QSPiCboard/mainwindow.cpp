@@ -1,11 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "spicsimlink.h"
 
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <iostream>
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent, int poti, int photo, bool display, bool advanced, bool vcdrecord) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -26,62 +27,120 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->led6->setColor(QLED::GREEN);
     ui->led7->setColor(QLED::BLUE);
     btnHold = false;
+
+    ui->valPoti->setValue(poti);
+    ui->adcPoti->setValue(poti);
+
+    ui->valPhoto->setValue(photo);
+    ui->adcPhoto->setValue(photo);
+
+    if (advanced)
+        ui->actionAdvanced->toggle();
+    if (vcdrecord)
+        ui->actionvcdrecord->toggle();
+
+    if (args_info.display_given)
+        ui->actiondisplay->toggle();
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(on_update()));
+    timer->start(1000 / (args_info.refresh_arg > 1 ? args_info.refresh_arg : 1));
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
+void MainWindow::on_update() {
+    ui->led0->setLightness(led_lightness(LED_RED0));
+    ui->led1->setLightness(led_lightness(LED_YELLOW0));
+    ui->led2->setLightness(led_lightness(LED_GREEN0));
+    ui->led3->setLightness(led_lightness(LED_BLUE0));
+    ui->led4->setLightness(led_lightness(LED_RED1));
+    ui->led5->setLightness(led_lightness(LED_YELLOW1));
+    ui->led6->setLightness(led_lightness(LED_GREEN1));
+    ui->led7->setLightness(led_lightness(LED_BLUE1));
 
-void MainWindow::on_btn1_pressed() {
-    if (!btnHold)
-        std::cout << "BTN1 pressed " << std::endl;
-}
+    ui->ledUser->setLightness(led_lightness(LED_USER));
 
-void MainWindow::on_btn1_released() {
-    if (!btnHold)
-        std::cout << "BTN1 released" << std::endl;
+    ui->seg0->setSegment(QSevenSeg::SEGMENT_0, led_lightness(LED_7SEG_0_0));
+    ui->seg0->setSegment(QSevenSeg::SEGMENT_1, led_lightness(LED_7SEG_0_1));
+    ui->seg0->setSegment(QSevenSeg::SEGMENT_2, led_lightness(LED_7SEG_0_2));
+    ui->seg0->setSegment(QSevenSeg::SEGMENT_3, led_lightness(LED_7SEG_0_3));
+    ui->seg0->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_0_4));
+    ui->seg0->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_0_5));
+    ui->seg0->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_0_6));
+
+    ui->seg1->setSegment(QSevenSeg::SEGMENT_0, led_lightness(LED_7SEG_1_0));
+    ui->seg1->setSegment(QSevenSeg::SEGMENT_1, led_lightness(LED_7SEG_1_1));
+    ui->seg1->setSegment(QSevenSeg::SEGMENT_2, led_lightness(LED_7SEG_1_2));
+    ui->seg1->setSegment(QSevenSeg::SEGMENT_3, led_lightness(LED_7SEG_1_3));
+    ui->seg1->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_1_4));
+    ui->seg1->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_1_5));
+    ui->seg1->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_1_6));
+
+    ui->oledGL->update();
+    update();
 }
 
 void MainWindow::on_btn0_pressed() {
     if (!btnHold)
-        std::cout << "BTN0 pressed " << std::endl;
+        button_set(BUTTON0, BUTTON_PRESSED);
 }
 
 void MainWindow::on_btn0_released() {
     if (!btnHold)
-        std::cout << "BTN0 released" << std::endl;
+        button_set(BUTTON0, BUTTON_RELEASED);
 }
 
 void MainWindow::on_btn0_clicked(bool checked) {
     if (btnHold)
-        std::cout << "BTN0 " << checked << std::endl;
+        button_set(BUTTON0, checked ? BUTTON_PRESSED : BUTTON_RELEASED);
+}
+
+void MainWindow::on_btn1_pressed() {
+    if (!btnHold)
+        button_set(BUTTON1, BUTTON_PRESSED);
+}
+
+void MainWindow::on_btn1_released() {
+    if (!btnHold)
+        button_set(BUTTON1, BUTTON_RELEASED);
 }
 
 void MainWindow::on_btn1_clicked(bool checked) {
     if (btnHold)
-        std::cout << "BTN1 " << checked << std::endl;
+        button_set(BUTTON1, checked ? BUTTON_PRESSED : BUTTON_RELEASED);
+}
+
+void MainWindow::on_btnUser_pressed() {
+    if (!btnHold)
+        button_set(BUTTON_USER, BUTTON_PRESSED);
+}
+
+void MainWindow::on_btnUser_released() {
+    if (!btnHold)
+        button_set(BUTTON_USER, BUTTON_RELEASED);
+}
+
+void MainWindow::on_btnUser_clicked(bool checked) {
+    if (btnHold)
+        button_set(BUTTON_USER, checked ? BUTTON_PRESSED : BUTTON_RELEASED);
+}
+
+
+void MainWindow::on_adcPoti_valueChanged(int value) {
+    ui->valPoti->setValue(value);
+    adc_set(POTI, (voltage_t)value);
 }
 
 void MainWindow::on_valPoti_valueChanged(int value) {
     ui->adcPoti->setValue(value);
 }
 
-void MainWindow::on_adcPoti_valueChanged(int value) {
-    ui->valPoti->setValue(value);
-    ui->led0->setLightness(value * 1.0 / 5000.0);
-    ui->led1->setLightness(value * 1.0 / 5000.0);
-    ui->led2->setLightness(value * 1.0 / 5000.0);
-    ui->led3->setLightness(value * 1.0 / 5000.0);
-    ui->led4->setLightness(value * 1.0 / 5000.0);
-    ui->led5->setLightness(value * 1.0 / 5000.0);
-    ui->led6->setLightness(value * 1.0 / 5000.0);
-    ui->led7->setLightness(value * 1.0 / 5000.0);
-    ui->seg0->setSegment(QSevenSeg::SEGMENT_4, value * 1.0 / 5000.0);
-}
-
 void MainWindow::on_adcPhoto_valueChanged(int value) {
     ui->valPhoto->setValue(value);
+    adc_set(PHOTO, (voltage_t)value);
 }
 
 void MainWindow::on_valPhoto_valueChanged(int value) {
@@ -144,3 +203,4 @@ void MainWindow::on_actionSaveVCD_triggered() {
 void MainWindow::on_actionhelp_triggered() {
      QDesktopServices::openUrl(QUrl("https://www4.cs.fau.de/Lehre/current/V_SPIC/SPiCboard/spicsim.shtml"));
 }
+

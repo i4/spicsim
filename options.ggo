@@ -28,16 +28,14 @@ modeoption "color" c "Terminal Colors" values="none","16","256","truecolor" enum
 modeoption "noesc" e "Disable ANSI escape codes (implies --color=`none`)" mode="Terminal" optional
 modeoption "lightness" l "LED lightness (between 0 and 1) wich should be visible as 'active' LED" float default="0.1" mode="Terminal" optional
 
-defmode "OpenGL"
-modeoption "opengl" o "Output in OpenGL window" mode="OpenGL" required
-modeoption "skin" s "Skin" values="spicboard","coffee" enum default="spicboard" mode="OpenGL" optional 
-
+defmode "GUI"
+modeoption "gui" w "Output in graphical user interface window" mode="GUI" required
 
 section "Communication"
 defgroup "Serial" groupdesc="Only UART0 is used" 
-groupoption "pty" T "Use Pseudo TTY for serial communication" argoptional string group="Serial" optional
+groupoption "pty" T "Use Pseudo TTY for serial communication" argoptional default="/var/run/spicsim" string group="Serial" optional
 groupoption "udp" U "Use the User Datagram Protocol for serial communication" argoptional default="1235" short group="Serial" optional
-groupoption "pipe" P "Use a named pipe for serial communication" argoptional default="/var/run/spicsim" string group="Serial" optional
+option "raw" R "Raw serial connection (instead of UART0)" dependon="udp" optional
 
 
 section "Analog-to-digital converter"

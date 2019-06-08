@@ -4,6 +4,7 @@
 #include "spicboard_button.h"
 #include "spicboard.h"
 
+#include "sim_avr.h"
 #include "avr_ioport.h"
 
 static avr_irq_t * irq;
@@ -36,7 +37,7 @@ void button_raise_irq() {
 	}
 }
 
-void button_init(struct avr_t * avr){
+void button_init(){
 	// Buttons
 	irq = avr_alloc_irq(&avr->irq_pool, 0, BUTTONS, irq_names);
 	avr_connect_irq(irq + BUTTON0, avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('D'), 2));

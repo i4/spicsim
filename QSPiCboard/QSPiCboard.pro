@@ -35,10 +35,12 @@ HEADERS += \
         mainwindow.h \
         qled.h \
         qsevenseg.h \
-        qoled.h
+        qoled.h \
+    spicsimlink.h
 
-FORMS += \
-        mainwindow.ui
+INCLUDEPATH += ..
+
+FORMS += mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

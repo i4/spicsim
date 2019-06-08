@@ -7,6 +7,7 @@
 
 #include "spicboard_hc595.h"
 #include "spicboard.h"
+#include "sim_avr.h"
 
 enum {
 	IRQ_BYTE_IN,
@@ -36,7 +37,7 @@ static void hc595_latch(struct avr_irq_t * irq, uint32_t value, void * param) {
 	}
 }
 
-void hc595_init(struct avr_t * avr) {
+void hc595_init() {
 	irq = avr_alloc_irq(&avr->irq_pool, 0, IRQ_COUNT, irq_names);
 
 	avr_irq_t * i_mosi = avr_io_getirq(avr, AVR_IOCTL_SPI_GETIRQ('0'), SPI_IRQ_OUTPUT),

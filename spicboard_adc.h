@@ -5,7 +5,6 @@
 #include <stdbool.h>
 
 #include "spicboard_types.h"
-#include "sim_avr.h"
 
 enum ADC {
 	POTI,
@@ -16,7 +15,7 @@ enum ADC {
 extern voltage_t adc_noise[ADCS];
 extern voltage_t adc_value[ADCS];
 
-bool adc_init(struct avr_t *);
+bool adc_init();
 void adc_set(enum ADC, voltage_t);
 void adc_set_rel(enum ADC, voltage_t);
 

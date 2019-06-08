@@ -1,8 +1,9 @@
 #include "spicboard_vcd.h"
+#include "spicboard.h"
 #include "spicboard_adc.h"
 #include "spicsim.h"
 
-
+#include "sim_avr.h"
 #include "sim_vcd_file.h"
 #include "avr_ioport.h"
 #include "avr_spi.h"
@@ -10,7 +11,7 @@
 
 static avr_vcd_t vcd_file;
 
-bool vcd_init(struct avr_t * avr){
+bool vcd_init(){
 	if (avr_vcd_init(avr, args_info.vcd_file_arg, &vcd_file, args_info.vcd_flush_arg) == 0){
 		fprintf(stderr, "Writing VCD to '%s' %d...\n", args_info.vcd_file_arg,  args_info.vcd_flush_arg);
 		avr_vcd_add_signal(&vcd_file, avr_get_interrupt_irq(avr, 1), 1, "INT/EXT_INT0");

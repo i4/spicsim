@@ -26,11 +26,74 @@
 #include "sim_time.h"
 
 #include "spicboard_ssd1306.h"
+#include "spicboard.h"
+#include "sim_avr.h"
+#include "sim_irq.h"
 #include "avr_twi.h"
 #include "avr_ioport.h"
 
 ssd1306_t oled;
 
+
+static const int SSD1306_VIRT_DATA = 1;
+static const int SSD1306_VIRT_INSTRUCTION = 0;
+
+static const int SSD1306_I2C_ADDRESS = 0x3C;
+static const int SSD1306_I2C_ADDRESS_MASK = 0xfe;
+
+enum {
+	/* Fundamental commands. */
+	SSD1306_VIRT_SET_CONTRAST           = 0x81,
+	SSD1306_VIRT_RESUME_TO_RAM_CONTENT  = 0xA4,
+	SSD1306_VIRT_IGNORE_RAM_CONTENT     = 0xA5,
+	SSD1306_VIRT_DISP_NORMAL            = 0xA6,
+	SSD1306_VIRT_DISP_INVERTED          = 0xA7,
+	SSD1306_VIRT_DISP_SUSPEND           = 0xAE,
+	SSD1306_VIRT_DISP_ON                = 0xAF,
+
+	/* Scrolling commands */
+	SSD1306_VIRT_SCROLL_RIGHT           = 0x26,
+	SSD1306_VIRT_SCROLL_LEFT            = 0x27,
+	SSD1306_VIRT_SCROLL_VR              = 0x29,
+	SSD1306_VIRT_SCROLL_VL              = 0x2A,
+	SSD1306_VIRT_SCROLL_OFF             = 0x2E,
+	SSD1306_VIRT_SCROLL_ON              = 0x2F,
+	SSD1306_VIRT_VERT_SCROLL_A          = 0xA3,
+
+	/* Address setting commands */
+	SSD1306_VIRT_SET_COLUMN_LOW_NIBBLE  = 0x00,
+	SSD1306_VIRT_SET_COLUMN_HIGH_NIBBLE = 0x10,
+	SSD1306_VIRT_MEM_ADDRESSING         = 0x20,
+	SSD1306_VIRT_SET_COL_ADDR           = 0x21,
+	SSD1306_VIRT_SET_PAGE_ADDR          = 0x22,
+	SSD1306_VIRT_SET_PAGE_START_ADDR    = 0xB0,
+
+	/* Hardware config. commands */
+	SSD1306_VIRT_SET_LINE               = 0x40,
+	SSD1306_VIRT_SET_SEG_REMAP_0        = 0xA0,
+	SSD1306_VIRT_SET_SEG_REMAP_127      = 0xA1,
+	SSD1306_VIRT_MULTIPLEX              = 0xA8,
+	SSD1306_VIRT_SET_COM_SCAN_NORMAL    = 0xC0,
+	SSD1306_VIRT_SET_COM_SCAN_INVERTED  = 0xC8,
+	SSD1306_VIRT_SET_OFFSET             = 0xD3,
+	SSD1306_VIRT_SET_PADS               = 0xDA,
+
+	/* Timing & driving scheme setting commands */
+	SSD1306_VIRT_SET_RATIO_OSC          = 0xD5,
+	SSD1306_VIRT_SET_CHARGE             = 0xD9,
+	SSD1306_VIRT_SET_VCOM               = 0xDB,
+	SSD1306_VIRT_NOP                    = 0xE3,
+
+	/* Charge pump command table */
+	SSD1306_VIRT_CHARGE_PUMP            = 0x8D,
+	SSD1306_VIRT_PUMP_ON                = 0x14
+};
+
+enum {
+	IRQ_SSD1306_TWI_IN,
+	IRQ_SSD1306_TWI_OUT,
+	IRQ_SSD1306_COUNT
+};
 
 /*
  * Write a byte at the current cursor location and then scroll the cursor.
@@ -354,7 +417,7 @@ static const char * irq_names[2] = {
 	[TWI_IRQ_OUTPUT] = "32<sdd1306.in",
 };
 
-void ssd1306_init (struct avr_t *avr) {
+void ssd1306_init () {
 	memset(&oled, 0, sizeof(oled));
 
 	/*

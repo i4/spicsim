@@ -27,6 +27,8 @@
 
 struct args_info args_info;
 
+extern int qt_run(int argc, char *argv[]);
+
 int main(int argc, char *argv[]){
 
 	if (cmdline_parser(argc, argv, &args_info) != 0) {
@@ -37,7 +39,7 @@ int main(int argc, char *argv[]){
 	} else if (!spicboard_load(args_info.inputs[0])) {
 		fprintf(stderr, "Loading ELF file '%s' failed!\n", args_info.inputs[0]);
 		return EXIT_FAILURE;
-	} else {
+	} else if (args_info.terminal_given){
 		printf("\n\n\n\n\n\n\n\n\n\n\n\n");
 		tui_print();
 
@@ -104,5 +106,7 @@ int main(int argc, char *argv[]){
 		}
 		tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 		return EXIT_SUCCESS;
+	} else {
+		return qt_run(argc, argv);
 	}
 }

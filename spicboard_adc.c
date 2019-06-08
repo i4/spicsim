@@ -7,6 +7,7 @@
 #include "spicboard_adc.h"
 #include "spicboard.h"
 
+#include "sim_avr.h"
 #include "avr_adc.h"
 #include "sim_irq.h"
 
@@ -54,7 +55,7 @@ static const char * irq_names[ADCS][IRQ_COUNT] = {
 	}
 };
 
-bool adc_init(struct avr_t * avr){
+bool adc_init(){
 	for (enum ADC adc = 0; adc < ADCS; adc++){
 		sb.adc[adc] = adc_value[adc];
 

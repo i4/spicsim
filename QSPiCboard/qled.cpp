@@ -18,7 +18,6 @@ void QLED::setColor(enum QLED::Color color){
 
 void QLED::setLightness(qreal value){
     fillColor.setAlphaF(value);
-    update();
 }
 
 void QLED::paintEvent(QPaintEvent *) {

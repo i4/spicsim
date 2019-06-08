@@ -32,7 +32,7 @@ const voltage_t voltage = 5000; // mV
 static int cpu_state;
 static cycles_t current_cycle = 0;
 
-static avr_t * avr = NULL;
+struct avr_t * avr = NULL;
 
 static void * avr_run_thread(void * param){
 	int s;

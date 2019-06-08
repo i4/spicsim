@@ -15,6 +15,10 @@ typedef struct {
 	bool btn[BUTTONS];
 } state_t;
 
+
+struct avr_t;
+extern struct avr_t * avr;
+
 extern const voltage_t voltage;
 
 extern state_t sb;
