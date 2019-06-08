@@ -3,3 +3,10 @@ obj-*
 cmdline.h
 cmdline.c
 *.vcd
+QSPiCboard/Makefile
+QSPiCboard/*.user
+QSPiCboard/*.o
+QSPiCboard/*.a
+QSPiCboard/moc_*
+QSPiCboard/qrc_*.cpp
+QSPiCboard/ui_*.h
