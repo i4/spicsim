@@ -20,14 +20,14 @@ OBJECTS=$(addprefix $(OBJ)/, $(SOURCES:.c=.o))
 $(QSPICBOARDDIR)/Makefile: $(QSPICBOARDDIR)/$(QSPICBOARDPRO)
 	cd $(QSPICBOARDDIR) && qmake -makefile $(QSPICBOARDPRO)
 
-$(QSPICBOARDDIR)/$(LIBQSPICBOARD): $(QSPICBOARDDIR)/Makefile $(wildcard $(QSPICBOARDDIR)/*.cpp) $(wildcard $(QSPICBOARDDIR)/*.h)
+$(QSPICBOARDDIR)/$(LIBQSPICBOARD): $(QSPICBOARDDIR)/Makefile $(wildcard $(QSPICBOARDDIR)/*.cpp) $(wildcard $(QSPICBOARDDIR)/*.h) $(wildcard $(QSPICBOARDDIR)/*.ui)
 	make -C $(QSPICBOARDDIR)
 
 $(SIMAVR):
 	@echo GIT SUBMODULE $@
 	$(E)git submodule update --init --recursive 
 
-$(LIBSIMAVR): $(SIMAVR)
+$(LIBSIMAVR): $(SIMAVR) FORCE
 	$(MAKE) -C simavr build-simavr
 
 $(ARGPASER).o: $(ARGPASER).c $(ARGPASER).h
@@ -36,11 +36,13 @@ $(ARGPASER).c $(ARGPASER).h: options.ggo
 	@echo GENGETOPT $@
 	$(E)gengetopt -i $< -F $(ARGPASER)
 
-$(OBJ)/$(TARGET).elf: $(OBJECTS) $(QSPICBOARDDIR)/$(LIBQSPICBOARD)
+$(OBJ)/$(TARGET).elf: $(OBJECTS) $(QSPICBOARDDIR)/$(LIBQSPICBOARD) $(LIBSIMAVR)
 
-${TARGET}: $(OBJ)/$(TARGET).elf $(LIBSIMAVR)
+${TARGET}: $(OBJ)/$(TARGET).elf
 	@echo "LN $< -> $@"
 	$(E)ln -f -s $< $@
+
+FORCE:
 
 clean: clean-${OBJ}
 	make -C $(QSPICBOARDDIR) clean

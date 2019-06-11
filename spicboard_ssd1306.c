@@ -330,7 +330,6 @@ static void ssd1306_write_command() {
  * Called when a TWI byte is sent
  */
 static void ssd1306_hook (struct avr_irq_t * irq, uint32_t value, void * param) {
-static int i =0;
 	avr_twi_msg_irq_t v;
 	v.u.v = value;
 

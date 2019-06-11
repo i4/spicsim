@@ -26,7 +26,7 @@ void QOLED::paintGL(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-1, 128, -1, 64, -1, 1);
+    glOrtho(0, 128, 0, 64, -1, 1);
     glMatrixMode(GL_MODELVIEW);
     ssd1306_set_flag(SSD1306_FLAG_DIRTY, 0);
     const bool vertical = ssd1306_get_flag(SSD1306_FLAG_SEGMENT_REMAP_0) != 0;

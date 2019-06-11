@@ -84,18 +84,18 @@ bool spicboard_load(char * fname){
 		adc_noise[POTI] = args_info.poti_noise_arg;
 		adc_value[PHOTO] = args_info.photo_value_arg;
 		adc_noise[PHOTO] = args_info.photo_noise_arg;
-		adc_init(avr);
+		adc_init();
 
 		// Buttons
-		button_init(avr);
+		button_init();
 
 		// Shift register / 7 segment display
-		hc595_init(avr);
+		hc595_init();
 
 		// connect all the pins to our callback
-		led_init(avr);
+		led_init();
 
-		ssd1306_init(avr);
+		ssd1306_init();
 
 		// even if not setup at startup, activate gdb if crashing
 		avr->gdb_port = args_info.gdb_arg;
@@ -106,7 +106,7 @@ bool spicboard_load(char * fname){
 		}
 
 		if (args_info.vcd_given) {
-			if (!vcd_init(avr))
+			if (!vcd_init())
 				fprintf(stderr, "Not able to initialize Value Change Dump recording...\n");
 			else if (!vcd_start())
 				fprintf(stderr, "Not able to start Value Change Dump recording...\n");

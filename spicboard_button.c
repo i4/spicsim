@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -7,7 +8,8 @@
 #include "sim_avr.h"
 #include "avr_ioport.h"
 
-static avr_irq_t * irq;
+static avr_irq_t irq[BUTTONS];
+static avr_ioport_external_t ext = { .mask = (1 << 2) | (1 << 3), .value = 0xff } ;
 
 static const char * irq_names[BUTTONS] = {
 	[BUTTON0] = "BTN0",
@@ -31,20 +33,33 @@ void button_raise_irq() {
 		__atomic_store_n(&update, false, __ATOMIC_RELAXED);
 		for (int i = 0 ; i < BUTTONS; i++) {
 			enum BUTTONSTATE s = __atomic_exchange_n(btnState + i, BUTTON_UNCHANGED, __ATOMIC_RELAXED);
-			if (s != BUTTON_UNCHANGED)
-				avr_raise_irq(irq + i, s);
+			if (s != BUTTON_UNCHANGED) {
+				printf("Update %d\n",i);
+				if (i == BUTTON_USER) {
+					avr_raise_irq(irq + i, s);
+				} else { // Hack.
+					if (s == BUTTON_PRESSED)
+						ext.value |= (1 << (i + 2));
+					else
+						ext.value &= ~(1 << (i + 2));
+					avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL('D'), &ext);
+//					avr_raise_irq(irq + i, s);
+				}
+			}
 		}
 	}
 }
 
 void button_init(){
 	// Buttons
-	irq = avr_alloc_irq(&avr->irq_pool, 0, BUTTONS, irq_names);
+	avr_init_irq(&avr->irq_pool, irq, 0, BUTTONS, irq_names);
 	avr_connect_irq(irq + BUTTON0, avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('D'), 2));
 	avr_connect_irq(irq + BUTTON1, avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('D'), 3));
+	avr_irq_set_flags(irq + BUTTON0, IRQ_FLAG_NOT);
+	avr_irq_set_flags(irq + BUTTON1, IRQ_FLAG_NOT);
+	avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL('D'), &ext);
+	btnState[BUTTON0] = BUTTON_UNCHANGED;
+	btnState[BUTTON1] = BUTTON_UNCHANGED;
 	avr_connect_irq(irq + BUTTON_USER, avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('B'), 7));
-	for (int i = 0 ; i < BUTTONS ; i++) {
-		btnState[i] = BUTTON_UNCHANGED;
-	}
-
+	btnState[BUTTON_USER] = BUTTON_UNCHANGED;
 }
