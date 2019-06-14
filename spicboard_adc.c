@@ -41,7 +41,7 @@ static void adc_trigger(struct avr_irq_t * irq, uint32_t value, void * param) {
 
 
 static void adc_update(struct avr_irq_t * irq, uint32_t value, void * param) {
-	sb.adcread[(enum ADC)param] = value & 0xffff;
+	spicboard.adcread[(enum ADC)param] = value & 0xffff;
 }
 
 static const char * irq_names[ADCS][IRQ_COUNT] = {
@@ -57,7 +57,7 @@ static const char * irq_names[ADCS][IRQ_COUNT] = {
 
 bool adc_init(){
 	for (enum ADC adc = 0; adc < ADCS; adc++){
-		sb.adc[adc] = adc_value[adc];
+		spicboard.adc[adc] = adc_value[adc];
 
 		avr_irq_t * irq = avr_alloc_irq(&avr->irq_pool, 0, IRQ_COUNT, irq_names[adc]);
 
@@ -79,9 +79,9 @@ bool adc_init(){
 
 void adc_set(enum ADC adc, voltage_t value) {
 	__atomic_store_n(adc_value + adc, value, __ATOMIC_RELAXED);
-	sb.adc[adc] = value;
+	spicboard.adc[adc] = value;
 }
 
 void adc_set_rel(enum ADC adc, voltage_t value) {
-	sb.adc[adc] = __atomic_fetch_add(adc_value + adc, value, __ATOMIC_RELAXED);
+	spicboard.adc[adc] = __atomic_fetch_add(adc_value + adc, value, __ATOMIC_RELAXED);
 }

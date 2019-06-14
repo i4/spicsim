@@ -3,11 +3,42 @@
 #include "spicsimlink.h"
 
 #include <QDesktopServices>
+#include <QImage>
 #include <QFileDialog>
+#include <QFile>
+#include <QMessageBox>
+#include <QProcess>
 #include <iostream>
 
-MainWindow::MainWindow(QWidget *parent, int poti, int photo, bool display, bool advanced, bool vcdrecord) :
+QString MainWindow::getSaveFileName(const QString & title, const std::map<QString,QString> & filters, const QString defaultSuffix, const QString target){
+    QString selectedFilter, filterList;
+    if (!filters.empty()) {
+        for (auto const& f : filters){
+            if (!filterList.isEmpty())
+                filterList.append(";;");
+            filterList.append(f.second);
+            if (f.first == defaultSuffix)
+                selectedFilter = f.second;
+        }
+    }
+    QString fileName = QFileDialog::getSaveFileName(this, title, target, filterList, &selectedFilter);
+    if (fileName != nullptr){
+        QFileInfo fileInfo(fileName);
+        if (fileInfo.suffix() == ""){
+            for (auto const& f : filters){
+                if (selectedFilter == f.second){
+                    fileName.append(f.first);
+                    break;
+                }
+            }
+        }
+    }
+    return fileName;
+}
+
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    btnHold(false),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -26,17 +57,16 @@ MainWindow::MainWindow(QWidget *parent, int poti, int photo, bool display, bool 
     ui->led5->setColor(QLED::YELLOW);
     ui->led6->setColor(QLED::GREEN);
     ui->led7->setColor(QLED::BLUE);
-    btnHold = false;
 
-    ui->valPoti->setValue(poti);
-    ui->adcPoti->setValue(poti);
+    ui->valPoti->setValue(args_info.poti_value_arg);
+    ui->adcPoti->setValue(args_info.poti_value_arg);
 
-    ui->valPhoto->setValue(photo);
-    ui->adcPhoto->setValue(photo);
+    ui->valPhoto->setValue(args_info.photo_value_arg);
+    ui->adcPhoto->setValue(args_info.photo_value_arg);
 
-    if (advanced)
+    if (args_info.advanced_given)
         ui->actionAdvanced->toggle();
-    if (vcdrecord)
+    if (args_info.vcd_given)
         ui->actionvcdrecord->toggle();
 
     if (args_info.display_given)
@@ -45,6 +75,13 @@ MainWindow::MainWindow(QWidget *parent, int poti, int photo, bool display, bool 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_update()));
     timer->start(1000 / (args_info.refresh_arg > 1 ? args_info.refresh_arg : 1));
+
+    if (args_info.vcd_file_given){
+        vcd_file = args_info.vcd_file_arg;
+    } else {
+        QFileInfo fileInfo(spicboard_filepath());
+        vcd_file = fileInfo.canonicalPath() + "/" + fileInfo.baseName() + ".vcd";
+    }
 }
 
 MainWindow::~MainWindow() {
@@ -78,6 +115,9 @@ void MainWindow::on_update() {
     ui->seg1->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_1_4));
     ui->seg1->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_1_5));
     ui->seg1->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_1_6));
+
+    ui->actionpause->setChecked(spicboard_is_paused());
+    ui->statusBar->showMessage(spicboard_state_string());
 
     ui->oledGL->update();
     update();
@@ -131,7 +171,7 @@ void MainWindow::on_btnUser_clicked(bool checked) {
 
 void MainWindow::on_adcPoti_valueChanged(int value) {
     ui->valPoti->setValue(value);
-    adc_set(POTI, (voltage_t)value);
+    adc_set(POTI, static_cast<voltage_t>(value));
 }
 
 void MainWindow::on_valPoti_valueChanged(int value) {
@@ -140,15 +180,11 @@ void MainWindow::on_valPoti_valueChanged(int value) {
 
 void MainWindow::on_adcPhoto_valueChanged(int value) {
     ui->valPhoto->setValue(value);
-    adc_set(PHOTO, (voltage_t)value);
+    adc_set(PHOTO, static_cast<voltage_t>(value));
 }
 
 void MainWindow::on_valPhoto_valueChanged(int value) {
     ui->adcPhoto->setValue(value);
-}
-
-void MainWindow::on_actionexit_triggered() {
-    close();
 }
 
 void MainWindow::on_btnHold_clicked(bool checked) {
@@ -160,11 +196,11 @@ void MainWindow::on_btnHold_clicked(bool checked) {
 
 void MainWindow::on_actionAdvanced_toggled(bool value) {
     if (value){
-        ui->advanced->show();
         ui->advanced->setEnabled(true);
+        ui->advanced->show();
     } else {
-        ui->advanced->setEnabled(false);
         ui->advanced->hide();
+        ui->advanced->setEnabled(false);
         btnHold = false;
         ui->btnHold->setChecked(false);
         ui->btnUser->setChecked(false);
@@ -181,26 +217,114 @@ void MainWindow::on_actionAdvanced_toggled(bool value) {
 
 void MainWindow::on_actiondisplay_toggled(bool value) {
     if (value){
-        ui->oled->show();
+        ui->oledScreenshot->setEnabled(true);
         ui->oled->setEnabled(true);
+        ui->oled->show();
     } else {
-        ui->oled->setEnabled(false);
         ui->oled->hide();
+        ui->oled->setEnabled(false);
+        ui->oledScreenshot->setEnabled(false);
     }
 }
 
 void MainWindow::on_actionload_triggered() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Executable"), ".", tr("Executables (*.elf *.hex)"));
-    std::cout << "Selected File " <<  fileName.toStdString() << std::endl;
+    QFileInfo fileInfoPrev(spicboard_filepath());
+    QFileInfo fileInfo(QFileDialog::getOpenFileName(this, tr("Open Executable"), fileInfoPrev.canonicalPath(), tr("Executables (*.elf *.hex)")));
+    if (fileInfo.exists() && fileInfo.isReadable()) {
+        spicboard_stop();
+        if (!spicboard_load(fileInfo.absoluteFilePath().toStdString().c_str())){
+            QMessageBox::warning(this, "Loading Firmware File", "Error while loading firmware file!");
+        }
+    }
+}
 
+void MainWindow::on_actionvcdshow_triggered() {
+    QFileInfo fileInfoTmp(args_info.vcd_file_arg);
+    if (fileInfoTmp.exists()){
+        QProcess process;
+        process.setProgram("gtkwave");
+        process.setArguments(QStringList(fileInfoTmp.absoluteFilePath()));
+        process.startDetached();
+    } else {
+        QMessageBox::warning(this, "Value Change Dump View", "No (temporary) value change dump file available!");
+    }
 }
 
 void MainWindow::on_actionSaveVCD_triggered() {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Value Change Dump"), ".", tr("Value Change Dumps (*.vcd)"));
-    std::cout << "Save as " <<  fileName.toStdString() << std::endl;
+    std::map<QString,QString> filters={
+        { ".vcd", "Value Change Dump (*.vcd)"}
+    };
+    QFileInfo fileInfoSrc(args_info.vcd_file_arg);
+    if (fileInfoSrc.exists()) {
+        vcd_file = getSaveFileName("Save SPiCboard Screenshot", filters, ".vcd", vcd_file);
+        QFileInfo fileInfoDest(vcd_file);
+        if (vcd_file != nullptr && vcd_file != args_info.vcd_file_arg){
+            QFile::copy(args_info.vcd_file_arg, vcd_file);
+        }
+    } else {
+        QMessageBox::warning(this, "Value Change Dump File", "No temporary file created!");
+    }
 }
 
 void MainWindow::on_actionhelp_triggered() {
      QDesktopServices::openUrl(QUrl("https://www4.cs.fau.de/Lehre/current/V_SPIC/SPiCboard/spicsim.shtml"));
 }
 
+void MainWindow::on_actionexit_triggered() {
+    spicboard_exit();
+    close();
+}
+
+void MainWindow::on_actionreset_triggered() {
+    spicboard_reset();
+}
+
+void MainWindow::on_oledScreenshot_clicked() {
+    std::map<QString,QString> filters={
+        { ".png", "PNG (*.png)"},
+        { ".bmp", "BMP (*.bmp)" },
+        { ".jpg", "JPEG (*.jpg *.jpeg)" }
+    };
+    QFileInfo fileInfo(spicboard_filepath());
+    QString fileName = getSaveFileName("Save OLED-Display Screenshot", filters, ".png", fileInfo.canonicalPath() + "/" + fileInfo.baseName() + "_oled.png");
+    if (fileName != nullptr){
+        ui->oledGL->grabFramebuffer().save(fileName);
+    }
+}
+
+void MainWindow::on_actionScreenshot_triggered() {
+    std::map<QString,QString> filters={
+        { ".png", "PNG (*.png)"},
+        { ".bmp", "BMP (*.bmp)" },
+        { ".jpg", "JPEG (*.jpg *.jpeg)" }
+    };
+    QFileInfo fileInfo(spicboard_filepath());
+    QString fileName = getSaveFileName("Save SPiCboard Screenshot", filters, ".png", fileInfo.canonicalPath() + "/" + fileInfo.baseName() + ".png");
+    if (fileName != nullptr){
+        this->grab().save(fileName);
+    }
+}
+
+void MainWindow::on_actionpause_triggered(bool checked) {
+    if (checked) {
+        spicboard_pause();
+    } else {
+        spicboard_run();
+    }
+}
+
+void MainWindow::on_actionstep_triggered(){
+    spicboard_step();
+}
+
+void MainWindow::on_actionvcdrecord_triggered(bool checked) {
+    if (checked) {
+        if (!vcd_start()){
+            vcd_stop();
+            ui->actionvcdrecord->setChecked(false);
+            QMessageBox::warning(this, "Value Change Dump Record", "Failed recording Value Change Dump!");
+        }
+    } else {
+        vcd_stop();
+    }
+}

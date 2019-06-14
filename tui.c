@@ -127,7 +127,7 @@ static int tui_print_led(enum LED led, enum COLOR color, char * append, enum SYM
 
 	switch (args_info.color_arg) {
 		case color_arg_none:
-			return printf("%s%s", sb.led[led].active ? sym[on] : " ", append);
+			return printf("%s%s", spicboard.led[led].active ? sym[on] : " ", append);
 		case color_arg_256:
 			{
 				double lightness = led_lightness(led);
@@ -161,7 +161,7 @@ static int tui_print_led(enum LED led, enum COLOR color, char * append, enum SYM
 #define RESET IFANSI("0")
 #define symLED(COLOR, NUMBER, APPEND) tui_print_led(LED_ ## COLOR ## NUMBER, COLOR, APPEND, TUI_LED_ON, TUI_LED_OFF)
 #define sym7SEG(SEGMENT, NUMBER, APPEND) tui_print_led(LED_7SEG_ ## SEGMENT ## _ ## NUMBER, RED, APPEND, TUI_7SEG_ ## NUMBER, TUI_7SEG_ ## NUMBER)
-#define symBTN(NUMBER) (sb.btn[NUMBER] == 0 ? sym[TUI_BUTTON_PRESSED] : sym[TUI_BUTTON_RELEASED])
+#define symBTN(NUMBER) (spicboard.btn[NUMBER] == 0 ? sym[TUI_BUTTON_PRESSED] : sym[TUI_BUTTON_RELEASED])
 void tui_print(){
 	char ** sym = tui[args_info.terminal_arg == terminal_arg_utf8 ? 1 : 0];
 
@@ -184,7 +184,7 @@ void tui_print(){
 	symLED(YELLOW,0,"   ");
 	printf("%sSimulator%s        %s\n\t%s ", IFANSI("1;3"), RESET, sym[TUI_VERTICAL], sym[TUI_VERTICAL]);
 	symLED(GREEN,0,"             ");
-	printf("%s%4dmV%s %s\n\t%s ", IFANSI("1;37"), sb.adc[PHOTO], RESET, sym[TUI_VERTICAL], sym[TUI_VERTICAL]);
+	printf("%s%4dmV%s %s\n\t%s ", IFANSI("1;37"), spicboard.adc[PHOTO], RESET, sym[TUI_VERTICAL], sym[TUI_VERTICAL]);
 	symLED(BLUE,0,"                ");
 	printf("%s   %s\n\t%s ", sym[TUI_PHOTO], sym[TUI_VERTICAL], sym[TUI_VERTICAL]);
 	symLED(RED,1,"         ");
@@ -209,6 +209,6 @@ void tui_print(){
 	sym7SEG(1,2," ");
 	printf("%s %s\n\t%s ", symBTN(0), sym[TUI_VERTICAL], sym[TUI_VERTICAL]);
 	symLED(BLUE,1," ");
-	printf("%s%4dmV%s         %s %s\n\t%s%s%s\n", IFANSI("1;37"), sb.adc[POTI], RESET, symBTN(1), sym[TUI_VERTICAL],sym[TUI_BOTTOM_LEFT], sym[TUI_HORIZONTAL], sym[TUI_BOTTOM_RIGHT]);
+	printf("%s%4dmV%s         %s %s\n\t%s%s%s\n", IFANSI("1;37"), spicboard.adc[POTI], RESET, symBTN(1), sym[TUI_VERTICAL],sym[TUI_BOTTOM_LEFT], sym[TUI_HORIZONTAL], sym[TUI_BOTTOM_RIGHT]);
 }
 

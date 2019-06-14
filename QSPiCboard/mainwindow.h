@@ -13,11 +13,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr, int poti = 2000, int photo = 1000, bool display = false, bool advanced = false, bool vcdrecord = false);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
     bool btnHold;
+    QString vcd_file;
+    QString getSaveFileName(const QString & title, const std::map<QString,QString> & filters, const QString defaultSuffix = nullptr, const QString target = nullptr);
 
 private slots:
     void on_btnHold_clicked(bool checked);
@@ -37,14 +39,18 @@ private slots:
     void on_actionload_triggered();
     void on_actionSaveVCD_triggered();
     void on_actionhelp_triggered();
-
     void on_update();
-
     void on_btnUser_pressed();
-
     void on_btnUser_released();
-
     void on_btnUser_clicked(bool checked);
+    void on_actionreset_triggered();
+    void on_oledScreenshot_clicked();
+    void on_actionScreenshot_triggered();
+    void on_actionvcdshow_triggered();
+    void on_actionpause_triggered(bool checked);
+    void on_actionstep_triggered();
+
+    void on_actionvcdrecord_triggered(bool checked);
 
 private:
     Ui::MainWindow *ui;

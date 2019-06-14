@@ -21,15 +21,23 @@ extern struct avr_t * avr;
 
 extern const voltage_t voltage;
 
-extern state_t sb;
 
 extern uint16_t gdb_port;
 extern bool gdb_enable;
 
-cycles_t get_cycles();
-int get_cpu_state();
-const char * get_cpu_state_string();
+extern state_t spicboard;
 
-bool spicboard_load(char * fname);
+cycles_t spicboard_cycles();
+int spicboard_state();
+const char * spicboard_filepath();
+const char * spicboard_state_string();
+void spicboard_pause();
+bool spicboard_is_paused();
+void spicboard_step();
+void spicboard_run();
+void spicboard_reset();
+bool spicboard_stop();
+bool spicboard_load(const char * fname);
+void spicboard_exit();
 
 #endif /* SPICBOARD_H */

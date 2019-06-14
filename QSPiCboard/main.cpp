@@ -40,18 +40,52 @@ double led_lightness(enum LED led){
     return x - floor(x);
 }
 
-cycles_t get_cycles() {
+cycles_t spicboard_cycles() {
     return 23;
 }
 
-int get_cpu_state() {
+int spicboard_state() {
     return 7;
 }
 
-const char * get_cpu_state_string() {
+const char * spicboard_state_string(){
     return "Simulation";
 }
 
-bool spicboard_load(char * fname){
+void spicboard_pause(){
+    std::cout << "Pause SPiCboard simulation" << std::endl;
+}
+
+bool spicboard_is_paused(){
+    return false;
+}
+
+void spicboard_step(){
+    std::cout << "Step SPiCboard simulation" << std::endl;
+}
+
+void spicboard_run(){
+    std::cout << "Run SPiCboard simulation" << std::endl;
+}
+
+void spicboard_reset(){
+    std::cout << "Reset SPiCboard simulation" << std::endl;
+}
+
+bool spicboard_stop(){
+    std::cout << "Stop SPiCboard simulation" << std::endl;
+    return true;
+}
+
+void spicboard_exit(){
+    std::cout << "Exit SPiCboard simulation" << std::endl;
+}
+
+const char * spicboard_filepath() {
+    return "/tmp/foo.elf";
+}
+
+bool spicboard_load(const char * fname){
     std::cout << "Loading " << fname << std::endl;
+    return true;
 }

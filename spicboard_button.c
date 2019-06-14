@@ -22,7 +22,7 @@ static enum BUTTONSTATE btnState[BUTTONS];
 
 void button_set(enum BUTTON btn, enum BUTTONSTATE state){
 	if (state != BUTTON_UNCHANGED) {
-		sb.btn[btn] = state;
+		spicboard.btn[btn] = state;
 		__atomic_store_n(btnState + btn, state, __ATOMIC_RELAXED);
 		__atomic_store_n(&update, true, __ATOMIC_RELAXED);
 	}
@@ -34,7 +34,6 @@ void button_raise_irq() {
 		for (int i = 0 ; i < BUTTONS; i++) {
 			enum BUTTONSTATE s = __atomic_exchange_n(btnState + i, BUTTON_UNCHANGED, __ATOMIC_RELAXED);
 			if (s != BUTTON_UNCHANGED) {
-				printf("Update %d\n",i);
 				if (i == BUTTON_USER) {
 					avr_raise_irq(irq + i, s);
 				} else { // Hack.

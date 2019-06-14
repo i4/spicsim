@@ -20,6 +20,7 @@ option "vcd-flush" - "VCD File flushing periond (in us)" default="1000000" int o
 section "User Interface Mode"
 
 option "refresh" r "Refresh rate (in Hz)" default="60" short optional
+option "advanced" a "Show advanced UI with additional information" optional
 option "display" d "Enable SSD1306 OLED Display" optional
 
 defmode "Terminal"
@@ -51,5 +52,9 @@ section "Microcontroller emulation internals" sectiondesc="Changing those settin
 option "frequency" F "Base frequency for the microcontroller in Hz" default="16000000" int optional
 option "avr" A "AVR microcontroller model" default="atmega328pb" string optional
 option "voltage" V "Reference voltage (in mV)" default="5000" int optional
+option "debug" D "SPiCsim debug output" optional
 
 option "eeprom" E "Use file for persistent EEPROM" argoptional default="eeprom" optional
+
+
+

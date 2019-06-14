@@ -36,7 +36,7 @@ HEADERS += \
         qled.h \
         qsevenseg.h \
         qoled.h \
-    spicsimlink.h
+        spicsimlink.h
 
 INCLUDEPATH += ..
 

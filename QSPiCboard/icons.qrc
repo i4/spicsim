@@ -13,5 +13,9 @@
     <file>icons/record_stop.svg</file>
     <file>icons/save.svg</file>
     <file>icons/vcdopen.svg</file>
+    <file>icons/screenshot.svg</file>
+    <file>icons/run.svg</file>
+    <file>icons/pause.svg</file>
+    <file>icons/step.svg</file>
 </qresource>
 </RCC>

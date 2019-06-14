@@ -213,9 +213,33 @@
       <rect>
        <x>0</x>
        <y>20</y>
-       <width>258</width>
-       <height>130</height>
+       <width>256</width>
+       <height>128</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="oledScreenshot">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>239</x>
+       <y>0</y>
+       <width>21</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="icons.qrc">
+       <normaloff>:/icons/screenshot.svg</normaloff>
+       <normalon>:/icons/screenshot.svg</normalon>:/icons/screenshot.svg</iconset>
+     </property>
+     <property name="shortcut">
+      <string>Ctrl+Shift+O</string>
      </property>
     </widget>
    </widget>
@@ -652,7 +676,9 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionload"/>
+   <addaction name="actionpause"/>
    <addaction name="actionreset"/>
+   <addaction name="actionScreenshot"/>
    <addaction name="separator"/>
    <addaction name="actionAdvanced"/>
    <addaction name="actiondisplay"/>
@@ -664,7 +690,14 @@
    <addaction name="actionhelp"/>
    <addaction name="actionexit"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="font">
+    <font>
+     <pointsize>7</pointsize>
+     <italic>true</italic>
+    </font>
+   </property>
+  </widget>
   <action name="actionAdvanced">
    <property name="checkable">
     <bool>true</bool>
@@ -699,6 +732,9 @@
    <property name="toolTip">
     <string>Toggle OLED Display</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
   </action>
   <action name="actionhelp">
    <property name="icon">
@@ -711,6 +747,9 @@
    <property name="toolTip">
     <string>Show Help</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
   </action>
   <action name="actionexit">
    <property name="icon">
@@ -719,6 +758,9 @@
    </property>
    <property name="text">
     <string>exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionvcdrecord">
@@ -751,6 +793,9 @@
    <property name="toolTip">
     <string>Save Value Change Dump</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionload">
    <property name="icon">
@@ -763,8 +808,8 @@
    <property name="toolTip">
     <string>Load file</string>
    </property>
-   <property name="statusTip">
-    <string>Load File</string>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionvcdshow">
@@ -794,6 +839,40 @@
     <string>Ctrl+R</string>
    </property>
   </action>
+  <action name="actionScreenshot">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/screenshot.svg</normaloff>:/icons/screenshot.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Screenshot</string>
+   </property>
+   <property name="toolTip">
+    <string>Save a Screenshot as Image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionpause">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/run.svg</normaloff>
+     <normalon>:/icons/pause.svg</normalon>:/icons/run.svg</iconset>
+   </property>
+   <property name="text">
+    <string>pause</string>
+   </property>
+   <property name="toolTip">
+    <string>Pause simulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -815,6 +894,17 @@
    <header>qoled.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>adcPoti</tabstop>
+  <tabstop>valPoti</tabstop>
+  <tabstop>adcPhoto</tabstop>
+  <tabstop>valPhoto</tabstop>
+  <tabstop>btn1</tabstop>
+  <tabstop>btn0</tabstop>
+  <tabstop>btnHold</tabstop>
+  <tabstop>btnUser</tabstop>
+  <tabstop>oledScreenshot</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>
