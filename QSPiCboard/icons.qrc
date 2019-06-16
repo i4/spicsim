@@ -17,5 +17,6 @@
     <file>icons/run.svg</file>
     <file>icons/pause.svg</file>
     <file>icons/step.svg</file>
+    <file>icons/i4logo.svg</file>
 </qresource>
 </RCC>

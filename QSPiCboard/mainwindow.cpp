@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->mainToolBar->insertWidget(ui->actionhelp, spacer);
 
+    // Skin SPiCboard
     ui->oled->hide();
     ui->advanced->hide();
     ui->ledUser->setColor(QLED::YELLOW);
@@ -70,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->valPhoto->setValue(args_info.photo_value_arg);
     ui->adcPhoto->setValue(args_info.photo_value_arg);
 
+
     if (args_info.advanced_given)
         ui->actionAdvanced->toggle();
     if (args_info.vcd_given)
@@ -78,6 +80,23 @@ MainWindow::MainWindow(QWidget *parent) :
     if (args_info.display_given)
         ui->actiondisplay->toggle();
 
+    // Skin Traffic Light
+    ui->trafficLightCarRed0->setColor(QLED::RED);
+    ui->trafficLightCarRed1->setColor(QLED::RED);
+    ui->trafficLightCarYellow0->setColor(QLED::YELLOW);
+    ui->trafficLightCarYellow1->setColor(QLED::YELLOW);
+    ui->trafficLightCarGreen0->setColor(QLED::GREEN);
+    ui->trafficLightCarGreen1->setColor(QLED::GREEN);
+
+    ui->trafficLightPedRed->setColor(QLED::RED);
+    ui->trafficLightPedGreen->setColor(QLED::GREEN);
+    ui->trafficLightPedBlue->setColor(QLED::BLUE);
+    ui->trafficLightPedBlue->setSize(10);
+
+    ui->trafficLightSeg0->setSize(1, 0, false);
+    ui->trafficLightSeg1->setSize(1, 0, false);
+
+    // General
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_update()));
     timer->start(1000 / (args_info.refresh_arg > 1 ? args_info.refresh_arg : 1));
@@ -98,6 +117,37 @@ void MainWindow::on_update() {
 
     switch (ui->skin->currentIndex()){
         case SKIN_TRAFFICLIGHT:
+            {
+                double carRed = led_lightness(LED_RED0);
+                ui->trafficLightCarRed0->setLightness(carRed);
+                ui->trafficLightCarRed1->setLightness(carRed);
+                double carYellow = led_lightness(LED_YELLOW0);
+                ui->trafficLightCarYellow0->setLightness(carYellow);
+                ui->trafficLightCarYellow1->setLightness(carYellow);
+                double carGreen = led_lightness(LED_GREEN0);
+                ui->trafficLightCarGreen0->setLightness(carGreen);
+                ui->trafficLightCarGreen1->setLightness(carGreen);
+
+                ui->trafficLightPedRed->setLightness(led_lightness(LED_RED1));
+                ui->trafficLightPedGreen->setLightness(led_lightness(LED_GREEN1));
+                ui->trafficLightPedBlue->setLightness(led_lightness(LED_BLUE1));
+
+                ui->trafficLightSeg0->setSegment(QSevenSeg::SEGMENT_0, led_lightness(LED_7SEG_0_0));
+                ui->trafficLightSeg0->setSegment(QSevenSeg::SEGMENT_1, led_lightness(LED_7SEG_0_1));
+                ui->trafficLightSeg0->setSegment(QSevenSeg::SEGMENT_2, led_lightness(LED_7SEG_0_2));
+                ui->trafficLightSeg0->setSegment(QSevenSeg::SEGMENT_3, led_lightness(LED_7SEG_0_3));
+                ui->trafficLightSeg0->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_0_4));
+                ui->trafficLightSeg0->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_0_5));
+                ui->trafficLightSeg0->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_0_6));
+
+                ui->trafficLightSeg1->setSegment(QSevenSeg::SEGMENT_0, led_lightness(LED_7SEG_1_0));
+                ui->trafficLightSeg1->setSegment(QSevenSeg::SEGMENT_1, led_lightness(LED_7SEG_1_1));
+                ui->trafficLightSeg1->setSegment(QSevenSeg::SEGMENT_2, led_lightness(LED_7SEG_1_2));
+                ui->trafficLightSeg1->setSegment(QSevenSeg::SEGMENT_3, led_lightness(LED_7SEG_1_3));
+                ui->trafficLightSeg1->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_1_4));
+                ui->trafficLightSeg1->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_1_5));
+                ui->trafficLightSeg1->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_1_6));
+            }
             break;
 
         case SKIN_COFFEE:
@@ -348,4 +398,20 @@ void MainWindow::on_actionstep_triggered(){
 void MainWindow::on_skin_currentChanged(int index){
     ui->actionAdvanced->setEnabled(index == SKIN_SPICBOARD);
     ui->actiondisplay->setEnabled(index == SKIN_SPICBOARD);
+}
+
+void MainWindow::on_trafficLightBtn0_pressed() {
+    button_set(BUTTON0, BUTTON_PRESSED);
+}
+
+void MainWindow::on_trafficLightBtn0_released() {
+    button_set(BUTTON0, BUTTON_RELEASED);
+}
+
+void MainWindow::on_trafficLightBtn1_pressed() {
+    button_set(BUTTON1, BUTTON_PRESSED);
+}
+
+void MainWindow::on_trafficLightBtn1_released() {
+    button_set(BUTTON1, BUTTON_RELEASED);
 }

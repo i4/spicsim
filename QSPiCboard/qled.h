@@ -6,7 +6,6 @@
 class QLED : public QWidget
 {
     Q_OBJECT
-
 public:
     explicit QLED(QWidget *parent = nullptr);
     enum Color {
@@ -14,6 +13,7 @@ public:
     };
 
     void setColor(enum Color color);
+    void setSize(int size);
     void setLightness(qreal value);
 
 signals:
@@ -25,6 +25,7 @@ protected:
 
 private:
     QColor fillColor;
+    int size = 20;
 };
 
 #endif // QLED_H

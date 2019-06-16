@@ -49,10 +49,12 @@ private slots:
     void on_actionvcdshow_triggered();
     void on_actionpause_triggered(bool checked);
     void on_actionvcdrecord_triggered(bool checked);
-
     void on_actionstep_triggered();
-
     void on_skin_currentChanged(int index);
+    void on_trafficLightBtn0_pressed();
+    void on_trafficLightBtn0_released();
+    void on_trafficLightBtn1_pressed();
+    void on_trafficLightBtn1_released();
 
 private:
     Ui::MainWindow *ui;

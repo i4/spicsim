@@ -21,6 +21,9 @@ public:
     };
 
     void setSegment(enum Segment, qreal value);
+    void setSize(int size, int offset, bool showBorder);
+    void setColor(QColor fill, QColor border);
+
 
 signals:
 
@@ -30,7 +33,10 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QColor segments[SEGMENTS];
+    QColor border, fill, segments[SEGMENTS];
+    int size = 5;
+    int offset = 2;
+    bool showBorder = true;
 };
 
 #endif // QSEVENSEG_H

@@ -3,6 +3,7 @@
 
 static void load_icons(){
     Q_INIT_RESOURCE(icons);
+    Q_INIT_RESOURCE(skins);
 }
 extern "C" int qt_run(int argc, char *argv[]) {
     load_icons();

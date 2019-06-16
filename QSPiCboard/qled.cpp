@@ -16,6 +16,10 @@ void QLED::setColor(enum QLED::Color color){
     }
 }
 
+void QLED::setSize(int size){
+    this->size = size;
+}
+
 void QLED::setLightness(qreal value){
     fillColor.setAlphaF(value);
 }
@@ -28,5 +32,5 @@ void QLED::paintEvent(QPaintEvent *) {
     painter.setPen(borderColor);
     painter.setBrush(fillColor);
 
-    painter.drawEllipse(10, 5, 20, 20);
+    painter.drawEllipse(size / 2, size / 4, size, size);
 }

@@ -31,6 +31,10 @@
   <property name="windowTitle">
    <string notr="true">SPiCsim</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/icons/i4logo.svg</normaloff>:/icons/i4logo.svg</iconset>
+  </property>
   <property name="locale">
    <locale language="English" country="Europe"/>
   </property>
@@ -655,8 +659,177 @@
     <attribute name="title">
      <string>Ampel</string>
     </attribute>
+    <widget class="QLED" name="trafficLightCarRed0" native="true">
+     <property name="geometry">
+      <rect>
+       <x>105</x>
+       <y>174</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="trafficLightCarYellow0" native="true">
+     <property name="geometry">
+      <rect>
+       <x>81</x>
+       <y>174</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="trafficLightCarGreen0" native="true">
+     <property name="geometry">
+      <rect>
+       <x>57</x>
+       <y>174</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="background">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>511</width>
+       <height>321</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="skins.qrc">:/skins/trafficlight.svg</pixmap>
+     </property>
+    </widget>
+    <widget class="QLED" name="trafficLightCarGreen1" native="true">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>11</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="trafficLightCarYellow1" native="true">
+     <property name="geometry">
+      <rect>
+       <x>386</x>
+       <y>11</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="trafficLightCarRed1" native="true">
+     <property name="geometry">
+      <rect>
+       <x>362</x>
+       <y>11</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="trafficLightPedGreen" native="true">
+     <property name="geometry">
+      <rect>
+       <x>299</x>
+       <y>198</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="trafficLightPedRed" native="true">
+     <property name="geometry">
+      <rect>
+       <x>299</x>
+       <y>174</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="trafficLightPedBlue" native="true">
+     <property name="geometry">
+      <rect>
+       <x>297</x>
+       <y>255</y>
+       <width>24</width>
+       <height>24</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QSevenSeg" name="trafficLightSeg0" native="true">
+     <property name="geometry">
+      <rect>
+       <x>312</x>
+       <y>252</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QSevenSeg" name="trafficLightSeg1" native="true">
+     <property name="geometry">
+      <rect>
+       <x>324</x>
+       <y>252</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="trafficLightBtn0">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>275</y>
+       <width>40</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Push</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="trafficLightBtn1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>290</y>
+       <width>91</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Interference</string>
+     </property>
+    </widget>
+    <zorder>background</zorder>
+    <zorder>trafficLightCarRed0</zorder>
+    <zorder>trafficLightCarYellow0</zorder>
+    <zorder>trafficLightCarGreen0</zorder>
+    <zorder>trafficLightCarGreen1</zorder>
+    <zorder>trafficLightCarYellow1</zorder>
+    <zorder>trafficLightCarRed1</zorder>
+    <zorder>trafficLightPedGreen</zorder>
+    <zorder>trafficLightPedRed</zorder>
+    <zorder>trafficLightPedBlue</zorder>
+    <zorder>trafficLightSeg0</zorder>
+    <zorder>trafficLightSeg1</zorder>
+    <zorder>trafficLightBtn0</zorder>
+    <zorder>trafficLightBtn1</zorder>
    </widget>
-   <widget class="QWidget" name="trafficlight">
+   <widget class="QWidget" name="coffee">
     <attribute name="title">
      <string>Kaffeemaschine</string>
     </attribute>
@@ -934,6 +1107,7 @@
  </tabstops>
  <resources>
   <include location="icons.qrc"/>
+  <include location="skins.qrc"/>
  </resources>
  <connections/>
 </ui>
