@@ -202,7 +202,7 @@
       <x>100</x>
       <y>0</y>
       <width>260</width>
-      <height>155</height>
+      <height>150</height>
      </rect>
     </property>
     <property name="title">
@@ -211,7 +211,7 @@
     <widget class="QOLED" name="oledGL">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>2</x>
        <y>20</y>
        <width>256</width>
        <height>128</height>
@@ -677,6 +677,7 @@
    </attribute>
    <addaction name="actionload"/>
    <addaction name="actionpause"/>
+   <addaction name="actionstep"/>
    <addaction name="actionreset"/>
    <addaction name="actionScreenshot"/>
    <addaction name="separator"/>
@@ -871,6 +872,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionstep">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/step.svg</normaloff>:/icons/step.svg</iconset>
+   </property>
+   <property name="text">
+    <string>step</string>
+   </property>
+   <property name="toolTip">
+    <string>Step to next instruction</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

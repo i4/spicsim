@@ -313,10 +313,6 @@ void MainWindow::on_actionpause_triggered(bool checked) {
     }
 }
 
-void MainWindow::on_actionstep_triggered(){
-    spicboard_step();
-}
-
 void MainWindow::on_actionvcdrecord_triggered(bool checked) {
     if (checked) {
         if (!vcd_start()){
@@ -327,4 +323,8 @@ void MainWindow::on_actionvcdrecord_triggered(bool checked) {
     } else {
         vcd_stop();
     }
+}
+
+void MainWindow::on_actionstep_triggered(){
+    spicboard_step();
 }

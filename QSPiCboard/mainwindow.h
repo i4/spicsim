@@ -48,8 +48,6 @@ private slots:
     void on_actionScreenshot_triggered();
     void on_actionvcdshow_triggered();
     void on_actionpause_triggered(bool checked);
-    void on_actionstep_triggered();
-
     void on_actionvcdrecord_triggered(bool checked);
 
 private:
