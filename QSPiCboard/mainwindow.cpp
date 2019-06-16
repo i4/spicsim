@@ -10,6 +10,12 @@
 #include <QProcess>
 #include <iostream>
 
+enum SKINS {
+    SKIN_SPICBOARD = 0,
+    SKIN_TRAFFICLIGHT = 1,
+    SKIN_COFFEE = 2
+};
+
 QString MainWindow::getSaveFileName(const QString & title, const std::map<QString,QString> & filters, const QString defaultSuffix, const QString target){
     QString selectedFilter, filterList;
     if (!filters.empty()) {
@@ -89,37 +95,47 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::on_update() {
-    ui->led0->setLightness(led_lightness(LED_RED0));
-    ui->led1->setLightness(led_lightness(LED_YELLOW0));
-    ui->led2->setLightness(led_lightness(LED_GREEN0));
-    ui->led3->setLightness(led_lightness(LED_BLUE0));
-    ui->led4->setLightness(led_lightness(LED_RED1));
-    ui->led5->setLightness(led_lightness(LED_YELLOW1));
-    ui->led6->setLightness(led_lightness(LED_GREEN1));
-    ui->led7->setLightness(led_lightness(LED_BLUE1));
 
-    ui->ledUser->setLightness(led_lightness(LED_USER));
+    switch (ui->skin->currentIndex()){
+        case SKIN_TRAFFICLIGHT:
+            break;
 
-    ui->seg0->setSegment(QSevenSeg::SEGMENT_0, led_lightness(LED_7SEG_0_0));
-    ui->seg0->setSegment(QSevenSeg::SEGMENT_1, led_lightness(LED_7SEG_0_1));
-    ui->seg0->setSegment(QSevenSeg::SEGMENT_2, led_lightness(LED_7SEG_0_2));
-    ui->seg0->setSegment(QSevenSeg::SEGMENT_3, led_lightness(LED_7SEG_0_3));
-    ui->seg0->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_0_4));
-    ui->seg0->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_0_5));
-    ui->seg0->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_0_6));
+        case SKIN_COFFEE:
+            break;
 
-    ui->seg1->setSegment(QSevenSeg::SEGMENT_0, led_lightness(LED_7SEG_1_0));
-    ui->seg1->setSegment(QSevenSeg::SEGMENT_1, led_lightness(LED_7SEG_1_1));
-    ui->seg1->setSegment(QSevenSeg::SEGMENT_2, led_lightness(LED_7SEG_1_2));
-    ui->seg1->setSegment(QSevenSeg::SEGMENT_3, led_lightness(LED_7SEG_1_3));
-    ui->seg1->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_1_4));
-    ui->seg1->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_1_5));
-    ui->seg1->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_1_6));
+        default: // SKIN_SPICBOARD
+            ui->led0->setLightness(led_lightness(LED_RED0));
+            ui->led1->setLightness(led_lightness(LED_YELLOW0));
+            ui->led2->setLightness(led_lightness(LED_GREEN0));
+            ui->led3->setLightness(led_lightness(LED_BLUE0));
+            ui->led4->setLightness(led_lightness(LED_RED1));
+            ui->led5->setLightness(led_lightness(LED_YELLOW1));
+            ui->led6->setLightness(led_lightness(LED_GREEN1));
+            ui->led7->setLightness(led_lightness(LED_BLUE1));
+
+            ui->ledUser->setLightness(led_lightness(LED_USER));
+
+            ui->seg0->setSegment(QSevenSeg::SEGMENT_0, led_lightness(LED_7SEG_0_0));
+            ui->seg0->setSegment(QSevenSeg::SEGMENT_1, led_lightness(LED_7SEG_0_1));
+            ui->seg0->setSegment(QSevenSeg::SEGMENT_2, led_lightness(LED_7SEG_0_2));
+            ui->seg0->setSegment(QSevenSeg::SEGMENT_3, led_lightness(LED_7SEG_0_3));
+            ui->seg0->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_0_4));
+            ui->seg0->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_0_5));
+            ui->seg0->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_0_6));
+
+            ui->seg1->setSegment(QSevenSeg::SEGMENT_0, led_lightness(LED_7SEG_1_0));
+            ui->seg1->setSegment(QSevenSeg::SEGMENT_1, led_lightness(LED_7SEG_1_1));
+            ui->seg1->setSegment(QSevenSeg::SEGMENT_2, led_lightness(LED_7SEG_1_2));
+            ui->seg1->setSegment(QSevenSeg::SEGMENT_3, led_lightness(LED_7SEG_1_3));
+            ui->seg1->setSegment(QSevenSeg::SEGMENT_4, led_lightness(LED_7SEG_1_4));
+            ui->seg1->setSegment(QSevenSeg::SEGMENT_5, led_lightness(LED_7SEG_1_5));
+            ui->seg1->setSegment(QSevenSeg::SEGMENT_6, led_lightness(LED_7SEG_1_6));
+
+            ui->oledGL->update();
+    }
 
     ui->actionpause->setChecked(spicboard_is_paused());
     ui->statusBar->showMessage(spicboard_state_string());
-
-    ui->oledGL->update();
     update();
 }
 
@@ -327,4 +343,9 @@ void MainWindow::on_actionvcdrecord_triggered(bool checked) {
 
 void MainWindow::on_actionstep_triggered(){
     spicboard_step();
+}
+
+void MainWindow::on_skin_currentChanged(int index){
+    ui->actionAdvanced->setEnabled(index == SKIN_SPICBOARD);
+    ui->actiondisplay->setEnabled(index == SKIN_SPICBOARD);
 }

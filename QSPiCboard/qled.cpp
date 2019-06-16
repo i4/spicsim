@@ -28,5 +28,5 @@ void QLED::paintEvent(QPaintEvent *) {
     painter.setPen(borderColor);
     painter.setBrush(fillColor);
 
-    painter.drawEllipse(10, 5, 20,20);
+    painter.drawEllipse(10, 5, 20, 20);
 }

@@ -50,6 +50,10 @@ private slots:
     void on_actionpause_triggered(bool checked);
     void on_actionvcdrecord_triggered(bool checked);
 
+    void on_actionstep_triggered();
+
+    void on_skin_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     QTimer *timer;
