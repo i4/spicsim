@@ -28,11 +28,15 @@ static void hc595_byte_in(struct avr_irq_t * irq, uint32_t value, void * param) 
 }
 
 static void hc595_latch(struct avr_irq_t * irq, uint32_t value, void * param) {
+	unsigned active = (spi_byte >> 7) & 1;
 	if (irq->value && !value){
-		unsigned active = (spi_byte >> 7) & 1;
 		for (unsigned i = 0; i < 7; i++) {
 			led_set((active ? LED_7SEG_1_0 : LED_7SEG_0_0) + i, ~(spi_byte >> i) & 1);
-			led_set((active ? LED_7SEG_0_0 : LED_7SEG_1_0) + i, false);
+		}
+	} else {
+		for (unsigned i = 0; i < 7; i++) {
+			led_set(LED_7SEG_0_0 + i, false);
+			led_set(LED_7SEG_1_0 + i, false);
 		}
 	}
 }
@@ -49,4 +53,3 @@ void hc595_init() {
 	avr_irq_register_notify(irq + IRQ_BYTE_IN, hc595_byte_in, NULL);
 	avr_irq_register_notify(irq + IRQ_LATCH, hc595_latch, NULL);
 }
-
