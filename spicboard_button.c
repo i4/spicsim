@@ -37,12 +37,14 @@ void button_raise_irq() {
 				if (i == BUTTON_USER) {
 					avr_raise_irq(irq + i, s);
 				} else { // Hack.
-					if (s == BUTTON_PRESSED)
+					if (s == BUTTON_PRESSED) {
 						ext.value |= (1 << (i + 2));
-					else
+					} else {
 						ext.value &= ~(1 << (i + 2));
+					}
 					avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL('D'), &ext);
-//					avr_raise_irq(irq + i, s);
+					avr_raise_irq(irq + i, s);
+
 				}
 			}
 		}
@@ -52,11 +54,13 @@ void button_raise_irq() {
 void button_init(){
 	// Buttons
 	avr_init_irq(&avr->irq_pool, irq, 0, BUTTONS, irq_names);
+	avr_raise_irq(irq + BUTTON0, BUTTON_RELEASED);
+	avr_raise_irq(irq + BUTTON1, BUTTON_RELEASED);
 	avr_connect_irq(irq + BUTTON0, avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('D'), 2));
 	avr_connect_irq(irq + BUTTON1, avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('D'), 3));
 	avr_irq_set_flags(irq + BUTTON0, IRQ_FLAG_NOT);
 	avr_irq_set_flags(irq + BUTTON1, IRQ_FLAG_NOT);
-	avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL('D'), &ext);
+//	avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL('D'), &ext);
 	btnState[BUTTON0] = BUTTON_UNCHANGED;
 	btnState[BUTTON1] = BUTTON_UNCHANGED;
 	avr_connect_irq(irq + BUTTON_USER, avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('B'), 7));
