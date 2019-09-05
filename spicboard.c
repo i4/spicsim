@@ -50,9 +50,14 @@ static enum {
 struct avr_t * avr = NULL;
 
 static void * avr_run_thread(void * param){
+	struct avr_t * avr = param;
 	int s;
+	unsigned c = 0;
 	__atomic_store_n(&current_cycle, 0, __ATOMIC_RELAXED);
 	do {
+		// ensure correct timing
+		if (c++ % 65536 == 0)
+			avr_callback_sleep_raw(avr, 0);
 		button_raise_irq();
 		s = avr_run(avr);
 		__atomic_store_n(&cpu_state, s, __ATOMIC_RELAXED);
@@ -72,13 +77,13 @@ static void * avr_run_thread(void * param){
 				__atomic_store_n(&avr_action, AVR_RUN, __ATOMIC_RELAXED);
 				break;
 			case AVR_TERMINATE:
-				avr_terminate(avr);
 				s = cpu_Done;
 				break;
 			default:
 				break;
 		}
 	} while (s != cpu_Done && s != cpu_Crashed);
+	avr_terminate(avr);
 	return NULL;
 }
 
@@ -143,11 +148,11 @@ bool spicboard_load(const char * fname){
 		char name[256];
 		int frequency = args_info.frequency_arg;
 		char * unit = "Hz";
-		if (args_info.frequency_arg > 1000){
+		if (frequency > 1000){
 			frequency /= 1000;
 			unit = "KHz";
 		}
-		if (args_info.frequency_arg > 1000){
+		if (frequency > 1000){
 			frequency /= 1000;
 			unit = "MHz";
 		}
@@ -201,7 +206,7 @@ bool spicboard_load(const char * fname){
 		}
 
 		spicboard_run();
-		return pthread_create(&avr_thread, NULL, avr_run_thread, NULL) == 0;
+		return pthread_create(&avr_thread, NULL, avr_run_thread, avr) == 0;
 	} else {
 		fprintf(stderr, "AVR '%s' not known\n", f.mmcu);
 		return false;
