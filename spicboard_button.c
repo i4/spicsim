@@ -37,13 +37,13 @@ void button_raise_irq() {
 				if (i == BUTTON_USER) {
 					avr_raise_irq(irq + i, s);
 				} else { // Hack.
-					if (s == BUTTON_PRESSED) {
+					if (s == BUTTON_RELEASED) {
 						ext.value |= (1 << (i + 2));
 					} else {
 						ext.value &= ~(1 << (i + 2));
 					}
 					avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL('D'), &ext);
-					avr_raise_irq(irq + i, s);
+					avr_raise_irq(irq + i, 1 - s);
 
 				}
 			}
