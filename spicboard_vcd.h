@@ -3,9 +3,9 @@
 
 #include <stdbool.h>
 
-bool vcd_init();
-bool vcd_start();
-void vcd_stop();
-void vcd_close();
+bool vcd_init(void);
+bool vcd_start(void);
+void vcd_stop(void);
+void vcd_close(void);
 
 #endif /* SPICBOARD_VCD_H */

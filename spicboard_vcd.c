@@ -10,8 +10,11 @@
 #include "avr_adc.h"
 
 static avr_vcd_t vcd_file;
+static bool vcd_active = false;
 
-bool vcd_init(){
+bool vcd_init(void){
+	if (vcd_file.avr != NULL)
+		return true;
 	if (avr_vcd_init(avr, args_info.vcd_file_arg, &vcd_file, args_info.vcd_flush_arg) == 0){
 		fprintf(stderr, "Writing VCD to '%s' %d...\n", args_info.vcd_file_arg,  args_info.vcd_flush_arg);
 		avr_vcd_add_signal(&vcd_file, avr_get_interrupt_irq(avr, 1), 1, "INT/EXT_INT0");
@@ -81,18 +84,21 @@ bool vcd_init(){
 		}
 		return true;
 	} else {
+		vcd_file.avr = NULL;
 		return false;
 	}
 }
 
-bool vcd_start(){
-	return avr_vcd_start(&vcd_file) == 0;
+bool vcd_start(void){
+	return (vcd_active = (avr_vcd_start(&vcd_file) == 0));
 }
 
-void vcd_stop(){
-	avr_vcd_stop(&vcd_file);
+void vcd_stop(void){
+	if (vcd_active)
+		avr_vcd_stop(&vcd_file);
 }
 
-void vcd_close(){
+void vcd_close(void){
+	vcd_stop();
 	avr_vcd_close(&vcd_file);
 }
