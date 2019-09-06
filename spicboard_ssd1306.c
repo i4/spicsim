@@ -101,15 +101,25 @@ enum {
 static void ssd1306_write_data() {
 	oled.vram[oled.cursor.page][oled.cursor.column] = oled.spi_data;
 
-	// Scroll the cursor
-	if (++(oled.cursor.column) >= SSD1306_VIRT_COLUMNS)
-	{
-		oled.cursor.column = 0;
-		if ( oled.addr_mode == SSD1306_ADDR_MODE_HORZ &&
-			(++(oled.cursor.page) >= SSD1306_VIRT_PAGES))
-		{
-			oled.cursor.page = 0;
-		}
+	switch (oled.addr_mode) {
+		case SSD1306_ADDR_MODE_PAGE:
+			if (++(oled.cursor.column) > oled.frame.width)
+				oled.cursor.column = oled.frame.x;
+			break;
+		case SSD1306_ADDR_MODE_HORZ:
+			if (++(oled.cursor.column) > oled.frame.width) {
+				oled.cursor.column = oled.frame.x;
+				if (++(oled.cursor.page) > oled.frame.height)
+					oled.cursor.page = oled.frame.y;
+			}
+			break;
+		case SSD1306_ADDR_MODE_VERT:
+			if (++(oled.cursor.page) > oled.frame.height) {
+				oled.cursor.page = oled.frame.y;
+				if (++(oled.cursor.column) > oled.frame.width)
+					oled.cursor.column = oled.frame.x;
+			}
+			break;
 	}
 
 	ssd1306_set_flag(SSD1306_FLAG_DIRTY, 1);
@@ -121,8 +131,7 @@ static void ssd1306_write_data() {
  */
 void ssd1306_update_command_register() {
 	oled.reg_write_sz = 1;
-	switch (oled.spi_data)
-	{
+	switch (oled.spi_data) {
 		case SSD1306_VIRT_CHARGE_PUMP:
 		case SSD1306_VIRT_SET_CONTRAST:
 			oled.command_register = oled.spi_data;
@@ -136,8 +145,7 @@ void ssd1306_update_command_register() {
 
 			return;
 		case SSD1306_VIRT_DISP_INVERTED:
-			ssd1306_set_flag(SSD1306_FLAG_DISPLAY_INVERTED,
-			                  1);
+			ssd1306_set_flag(SSD1306_FLAG_DISPLAY_INVERTED, 1);
 			ssd1306_set_flag(SSD1306_FLAG_DIRTY, 1);
 			//printf ("SSD1306: DISPLAY INVERTED\n");
 			oled.command_register = 0x00;
@@ -154,55 +162,42 @@ void ssd1306_update_command_register() {
 			//printf ("SSD1306: DISPLAY ON\n");
 			oled.command_register = 0x00;
 			return;
-		case SSD1306_VIRT_SET_PAGE_START_ADDR
-		                ... SSD1306_VIRT_SET_PAGE_START_ADDR
-		                                + SSD1306_VIRT_PAGES - 1:
-			oled.cursor.page = oled.spi_data
-			                - SSD1306_VIRT_SET_PAGE_START_ADDR;
+		case SSD1306_VIRT_SET_PAGE_START_ADDR ... SSD1306_VIRT_SET_PAGE_START_ADDR + SSD1306_VIRT_PAGES - 1:
+			oled.cursor.page = oled.spi_data - SSD1306_VIRT_SET_PAGE_START_ADDR;
 			//printf ("SSD1306: SET PAGE ADDRESS: 0x%02x\n", oled.spi_data);
 			oled.command_register = 0x00;
 			return;
-		case SSD1306_VIRT_SET_COLUMN_LOW_NIBBLE
-		                ... SSD1306_VIRT_SET_COLUMN_LOW_NIBBLE + 0xF:
+		case SSD1306_VIRT_SET_COLUMN_LOW_NIBBLE ... SSD1306_VIRT_SET_COLUMN_LOW_NIBBLE + 0xF:
 			oled.spi_data -= SSD1306_VIRT_SET_COLUMN_LOW_NIBBLE;
-			if (oled.addr_mode == SSD1306_ADDR_MODE_PAGE) {
-				oled.cursor.column = (oled.cursor.column & 0xF0)
-			                | (oled.spi_data & 0xF);
-			}
+			if (oled.addr_mode == SSD1306_ADDR_MODE_PAGE)
+				oled.cursor.column = (oled.cursor.column & 0xF0) | (oled.spi_data & 0xF);
 			//printf ("SSD1306: SET COLUMN LOW NIBBLE: 0x%02x\n",oled.spi_data);
 			oled.command_register = 0x00;
 			return;
-		case SSD1306_VIRT_SET_COLUMN_HIGH_NIBBLE
-		                ... SSD1306_VIRT_SET_COLUMN_HIGH_NIBBLE + 0xF:
+		case SSD1306_VIRT_SET_COLUMN_HIGH_NIBBLE ... SSD1306_VIRT_SET_COLUMN_HIGH_NIBBLE + 0xF:
 			oled.spi_data -= SSD1306_VIRT_SET_COLUMN_HIGH_NIBBLE;
-			if (oled.addr_mode == SSD1306_ADDR_MODE_PAGE) {
-				oled.cursor.column = (oled.cursor.column & 0xF)
-			                | ((oled.spi_data & 0xF) << 4);
-			}
+			if (oled.addr_mode == SSD1306_ADDR_MODE_PAGE) 
+				oled.cursor.column = (oled.cursor.column & 0xF) | ((oled.spi_data & 0xF) << 4);
 			//printf ("SSD1306: SET COLUMN HIGH NIBBLE: 0x%02x\n", oled.spi_data);
 			oled.command_register = 0x00;
 			return;
 		case SSD1306_VIRT_SET_SEG_REMAP_0:
-			ssd1306_set_flag(SSD1306_FLAG_SEGMENT_REMAP_0,
-			                  1);
+			ssd1306_set_flag(SSD1306_FLAG_SEGMENT_REMAP_0, 1);
 			//printf ("SSD1306: SET COLUMN ADDRESS 0 TO OLED SEG0 to \n");
 			oled.command_register = 0x00;
 			return;
 		case SSD1306_VIRT_SET_SEG_REMAP_127:
-			ssd1306_set_flag(SSD1306_FLAG_SEGMENT_REMAP_0,
-			                  0);
+			ssd1306_set_flag(SSD1306_FLAG_SEGMENT_REMAP_0, 0);
 			//printf ("SSD1306: SET COLUMN ADDRESS 127 TO OLED SEG0 to \n");
 			oled.command_register = 0x00;
 			return;
 		case SSD1306_VIRT_SET_COM_SCAN_NORMAL:
-			ssd1306_set_flag(SSD1306_FLAG_COM_SCAN_NORMAL,
-			                  1);
+			ssd1306_set_flag(SSD1306_FLAG_COM_SCAN_NORMAL, 1);
 			//printf ("SSD1306: SET COM OUTPUT SCAN DIRECTION NORMAL \n");
 			oled.command_register = 0x00;
 			return;
 		case SSD1306_VIRT_SET_COM_SCAN_INVERTED:
-			ssd1306_set_flag(SSD1306_FLAG_COM_SCAN_NORMAL,
-			                  0);
+			ssd1306_set_flag(SSD1306_FLAG_COM_SCAN_NORMAL, 0);
 			//printf ("SSD1306: SET COM OUTPUT SCAN DIRECTION REMAPPED \n");
 			oled.command_register = 0x00;
 			return;
@@ -248,8 +243,7 @@ void ssd1306_update_command_register() {
  * Multi-byte command setting
  */
 void ssd1306_update_setting() {
-	switch (oled.command_register)
-	{
+	switch (oled.command_register) {
 		case SSD1306_VIRT_SET_CONTRAST:
 			oled.contrast_register = oled.spi_data;
 			ssd1306_set_flag(SSD1306_FLAG_DIRTY, 1);
@@ -259,10 +253,10 @@ void ssd1306_update_setting() {
 		case SSD1306_VIRT_SET_PAGE_ADDR:
 			switch (--oled.reg_write_sz) {
 				case 1:
-					oled.cursor.page = oled.spi_data;
+					oled.frame.y = oled.cursor.page = oled.spi_data;
 					break;
 				case 0:
-					//TODO handle virtual page end
+					oled.frame.height = oled.spi_data;
 					oled.command_register = 0x00;
 			}
 			return;
@@ -270,10 +264,10 @@ void ssd1306_update_setting() {
 		case SSD1306_VIRT_SET_COL_ADDR:
 			switch (--oled.reg_write_sz) {
 				case 1:
-					oled.cursor.column = oled.spi_data;
+					oled.frame.x = oled.cursor.column = oled.spi_data;
 					break;
 				case 0:
-					//TODO handle virtual col end
+					oled.frame.width = oled.spi_data;
 					oled.command_register = 0x00;
 			}
 			return;
@@ -299,9 +293,9 @@ void ssd1306_update_setting() {
 		case SSD1306_VIRT_SCROLL_VR:
 		case SSD1306_VIRT_SCROLL_VL:
 		case SSD1306_VIRT_VERT_SCROLL_A:
-		    if (! --oled.reg_write_sz)
-			oled.command_register = 0x00;
-		    return;
+			if (! --oled.reg_write_sz)
+				oled.command_register = 0x00;
+			return;
 		default:
 			// Unknown command
 			printf("SSD1306: error: unknown update command %x\n",oled.command_register);
@@ -315,12 +309,10 @@ void ssd1306_update_setting() {
  * byte command.
  */
 static void ssd1306_write_command() {
-	if (!oled.command_register)
-	{
+	if (!oled.command_register) {
 		// Single byte or start of multi-byte command
 		ssd1306_update_command_register();
-	} else
-	{
+	} else {
 		// Multi-byte command setting
 		ssd1306_update_setting();
 	}
@@ -358,8 +350,7 @@ static void ssd1306_hook (struct avr_irq_t * irq, uint32_t value, void * param) 
 					abort();
 				}
 				oled.di_pin = v.u.twi.data ? SSD1306_VIRT_DATA : SSD1306_VIRT_INSTRUCTION;
-			} else 
-			{
+			} else {
 				oled.spi_data = v.u.twi.data;
 
 				switch (oled.di_pin)

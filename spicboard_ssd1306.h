@@ -70,20 +70,17 @@ enum ssd1306_addressing_mode_t
 	SSD1306_ADDR_MODE_PAGE
 };
 
-/*
- * Cursor position in VRAM
- */
-struct ssd1306_virt_cursor_t
-{
-	uint8_t page;
-	uint8_t column;
-};
-
 struct avr_irq_t;
+
 typedef struct ssd1306_t
 {
 	struct avr_irq_t * irq;
-	struct ssd1306_virt_cursor_t cursor;
+	struct {
+		uint8_t page, column;
+	} cursor;
+	struct {
+		uint8_t x, y, height, width;
+	} frame;
 	uint8_t vram[SSD1306_VIRT_PAGES][SSD1306_VIRT_COLUMNS];
 	uint16_t flags;
 	uint8_t command_register;
