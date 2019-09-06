@@ -36,6 +36,8 @@ const char * cpu_state_str[] = { "initialization", "stopped", "running", "sleepi
 
 const voltage_t voltage = 5000; // mV
 
+const unsigned sync_us = 1000; // Sync every 1 ms
+
 static int cpu_state;
 static cycles_t current_cycle = 0;
 
@@ -51,55 +53,64 @@ struct avr_t * avr = NULL;
 
 static void * avr_run_thread(void * param){
 	struct avr_t * avr = param;
-	int s;
-	unsigned c = 0;
+	int state;
+	unsigned sync_counter = 0;
+	const unsigned sync_counter_reset = avr->frequency / sync_us;
 	__atomic_store_n(&current_cycle, 0, __ATOMIC_RELAXED);
 	do {
 		// ensure correct timing
-		if (c++ % 65536 == 0)
+		if (sync_counter++ >= sync_counter_reset){
 			avr_callback_sleep_raw(avr, 0);
+			sync_counter = 0;
+		}
 		button_raise_irq();
-		s = avr_run(avr);
-		__atomic_store_n(&cpu_state, s, __ATOMIC_RELAXED);
+		state = avr_run(avr);
+		__atomic_store_n(&cpu_state, state, __ATOMIC_RELAXED);
 		__atomic_fetch_add(&current_cycle, 1, __ATOMIC_RELAXED);
 		switch (__atomic_load_n(&avr_action, __ATOMIC_RELAXED)){
 			case AVR_STEP:
 				__atomic_store_n(&avr_action, AVR_PAUSE, __ATOMIC_RELAXED);
 				 __attribute__ ((fallthrough)); 
 			case AVR_PAUSE:
-				do {
-					usleep(10000);
-				} while (__atomic_load_n(&avr_action, __ATOMIC_RELAXED) == AVR_PAUSE);
+				{
+					const uint64_t start = avr_get_time_stamp(avr);
+					do {
+						usleep(10000);
+					} while (__atomic_load_n(&avr_action, __ATOMIC_RELAXED) == AVR_PAUSE);
+					avr->time_base += avr_get_time_stamp(avr) - start;
+				}
 				break;
 			case AVR_RESET:
+				puts("reset");
+				led_reset();
 				avr_reset(avr);
 				__atomic_store_n(&current_cycle, 0, __ATOMIC_RELAXED);
 				__atomic_store_n(&avr_action, AVR_RUN, __ATOMIC_RELAXED);
 				break;
 			case AVR_TERMINATE:
-				s = cpu_Done;
+				state = cpu_Done;
 				break;
 			default:
 				break;
 		}
-	} while (s != cpu_Done && s != cpu_Crashed);
+	} while (state != cpu_Done && state != cpu_Crashed);
 	avr_terminate(avr);
 	return NULL;
 }
 
-cycles_t spicboard_cycles() {
+cycles_t spicboard_cycles(void) {
 	return __atomic_load_n(&current_cycle, __ATOMIC_RELAXED);
 }
 
-int spicboard_state(){
+int spicboard_state(void){
 	return __atomic_load_n(&cpu_state, __ATOMIC_RELAXED);
 }
 
-const char * spicboard_filepath(){
+const char * spicboard_filepath(void){
 	return current_file;
 }
 
-const char * spicboard_state_string(){
+const char * spicboard_state_string(void){
 	static char status[1024];
 	return snprintf(status, sizeof(status) - 1, "%s: %'llu cycles (%s)", mc_status, (unsigned long long)spicboard_cycles(), cpu_state_str[spicboard_state()]) > 0 ? status : NULL;
 }
@@ -109,28 +120,28 @@ static void debug_log(struct avr_t *avr, const int level, const char *format, va
 	vfprintf(stderr, format, ap);
 }
 
-void spicboard_pause(){
+void spicboard_pause(void){
 	__atomic_store_n(&avr_action, AVR_PAUSE, __ATOMIC_RELAXED);
 }
 
-bool spicboard_is_paused(){
+bool spicboard_is_paused(void){
 	return __atomic_load_n(&avr_action, __ATOMIC_RELAXED) == AVR_PAUSE;
 }
 
 
-void spicboard_step(){
+void spicboard_step(void){
 	__atomic_store_n(&avr_action, AVR_STEP, __ATOMIC_RELAXED);
 }
 
-void spicboard_run(){
+void spicboard_run(void){
 	__atomic_store_n(&avr_action, AVR_RUN, __ATOMIC_RELAXED);
 }
 
-void spicboard_reset(){
+void spicboard_reset(void){
 	__atomic_store_n(&avr_action, AVR_RESET, __ATOMIC_RELAXED);
 }
 
-bool spicboard_stop(){
+bool spicboard_stop(void){
 	__atomic_store_n(&avr_action, AVR_TERMINATE, __ATOMIC_RELAXED);
 	if (pthread_join(avr_thread, NULL) == 0){
 		return true;
@@ -186,7 +197,7 @@ bool spicboard_load(const char * fname){
 		hc595_init();
 
 		// connect all the pins to our callback
-		led_init(); 	// TODO: Clear LED status
+		led_init();
 
 		ssd1306_init();
 
@@ -213,8 +224,9 @@ bool spicboard_load(const char * fname){
 	}
 }
 
-void spicboard_exit() {
-	avr_deinit_gdb(avr);
-	spicboard_stop();
-	vcd_stop();
+void spicboard_exit(void) {
+	if (!spicboard_stop()){
+		avr_deinit_gdb(avr);
+		vcd_stop();
+	}
 }

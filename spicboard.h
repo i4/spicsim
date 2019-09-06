@@ -27,17 +27,17 @@ extern bool gdb_enable;
 
 extern state_t spicboard;
 
-cycles_t spicboard_cycles();
-int spicboard_state();
-const char * spicboard_filepath();
-const char * spicboard_state_string();
-void spicboard_pause();
-bool spicboard_is_paused();
-void spicboard_step();
-void spicboard_run();
-void spicboard_reset();
-bool spicboard_stop();
+cycles_t spicboard_cycles(void);
+int spicboard_state(void);
+const char * spicboard_filepath(void);
+const char * spicboard_state_string(void);
+void spicboard_pause(void);
+bool spicboard_is_paused(void);
+void spicboard_step(void);
+void spicboard_run(void);
+void spicboard_reset(void);
+bool spicboard_stop(void);
 bool spicboard_load(const char * fname);
-void spicboard_exit();
+void spicboard_exit(void);
 
 #endif /* SPICBOARD_H */
