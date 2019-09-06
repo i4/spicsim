@@ -42,7 +42,8 @@ typedef struct {
 	cycles_t since; // active since
 } led_t;
 
-void led_init();
+void led_init(void);
+void led_reset(void);
 void led_set(enum LED, bool);
 double led_lightness(enum LED);
 

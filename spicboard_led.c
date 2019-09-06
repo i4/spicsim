@@ -31,14 +31,19 @@ double led_lightness(enum LED led){
 		cycles_t print; // last print
 		double value; // last value
 	} last[LEDS];
-	
+
 	// Fetch Variables
 	led_t tmp = spicboard.led[led];
 	cycles_t now = spicboard_cycles();
 	if (now == last[led].print)
 		return last[led].value;
-	assert(now > last[led].print);
-	
+	else if(now < last[led].print) {
+		// We had a reset.
+		last[led].total = 0;
+		last[led].print = 0;
+		last[led].value = 0.0;
+	}
+
 	double L = 0.99999999;
 	if (!tmp.active || tmp.since >= last[led].print) {
 		// calculate
@@ -61,7 +66,14 @@ double led_lightness(enum LED led){
 	return L;
 }
 
-void led_init(){
+void led_reset(void){
+	const led_t off = { false, 0, 0 };
+	for (unsigned led = 0; led < LEDS ; led++)
+		spicboard.led[led] = off;
+}
+
+void led_init(void){
+	led_reset();
 	// connect all the pins to our callback
 	avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('B'), 0), led_changed_hook, (void*)LED_RED1);
 	avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('B'), 1), led_changed_hook, (void*)LED_YELLOW1);
@@ -73,4 +85,3 @@ void led_init(){
 	avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('D'), 6), led_changed_hook, (void*)LED_RED0);
 	avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('D'), 7), led_changed_hook, (void*)LED_BLUE0);
 }
-
