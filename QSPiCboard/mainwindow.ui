@@ -52,7 +52,7 @@
     <enum>QTabWidget::East</enum>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="defaultSkin">
     <attribute name="title">
@@ -998,6 +998,9 @@
    </property>
   </action>
   <action name="actionvcdshow">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/icons/vcdopen.svg</normaloff>:/icons/vcdopen.svg</iconset>

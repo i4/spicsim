@@ -66,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->led7->setColor(QLED::BLUE);
 
     ui->valPoti->setValue(args_info.poti_value_arg);
-    ui->adcPoti->setValue(args_info.poti_value_arg);
+    ui->adcPoti->setValue(5000 - args_info.poti_value_arg);
 
     ui->valPhoto->setValue(args_info.photo_value_arg);
     ui->adcPhoto->setValue(args_info.photo_value_arg);
@@ -101,6 +101,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer, SIGNAL(timeout()), this, SLOT(on_update()));
     timer->start(1000 / (args_info.refresh_arg > 1 ? args_info.refresh_arg : 1));
 
+    ui->actionvcdshow->setEnabled(false);
+    ui->actionSaveVCD->setEnabled(false);
     if (args_info.vcd_file_given){
         vcd_file = args_info.vcd_file_arg;
     } else {
@@ -236,12 +238,12 @@ void MainWindow::on_btnUser_clicked(bool checked) {
 
 
 void MainWindow::on_adcPoti_valueChanged(int value) {
-    ui->valPoti->setValue(value);
-    adc_set(POTI, static_cast<voltage_t>(value));
+    ui->valPoti->setValue(5000 - value);
+    adc_set(POTI, static_cast<voltage_t>(5000 - value));
 }
 
 void MainWindow::on_valPoti_valueChanged(int value) {
-    ui->adcPoti->setValue(value);
+    ui->adcPoti->setValue(5000 - value);
 }
 
 void MainWindow::on_adcPhoto_valueChanged(int value) {
@@ -297,7 +299,7 @@ void MainWindow::on_actionload_triggered() {
     QFileInfo fileInfoPrev(spicboard_filepath());
     QFileInfo fileInfo(QFileDialog::getOpenFileName(this, tr("Open Executable"), fileInfoPrev.canonicalPath(), tr("Executables (*.elf *.hex)")));
     if (fileInfo.exists() && fileInfo.isReadable()) {
-        spicboard_stop();
+        spicboard_exit();
         if (!spicboard_load(fileInfo.absoluteFilePath().toStdString().c_str())){
             QMessageBox::warning(this, "Loading Firmware File", "Error while loading firmware file!");
         }
@@ -322,7 +324,7 @@ void MainWindow::on_actionSaveVCD_triggered() {
     };
     QFileInfo fileInfoSrc(args_info.vcd_file_arg);
     if (fileInfoSrc.exists()) {
-        vcd_file = getSaveFileName("Save SPiCboard Screenshot", filters, ".vcd", vcd_file);
+        vcd_file = getSaveFileName("Save SPiCboard Value Change Dump", filters, ".vcd", vcd_file);
         QFileInfo fileInfoDest(vcd_file);
         if (vcd_file != nullptr && vcd_file != args_info.vcd_file_arg){
             QFile::copy(args_info.vcd_file_arg, vcd_file);
@@ -381,7 +383,8 @@ void MainWindow::on_actionpause_triggered(bool checked) {
 
 void MainWindow::on_actionvcdrecord_triggered(bool checked) {
     if (checked) {
-        if (!vcd_start()){
+        vcd_init();
+        if (!vcd_start()) {
             vcd_stop();
             ui->actionvcdrecord->setChecked(false);
             QMessageBox::warning(this, "Value Change Dump Record", "Failed recording Value Change Dump!");
@@ -389,6 +392,8 @@ void MainWindow::on_actionvcdrecord_triggered(bool checked) {
     } else {
         vcd_stop();
     }
+    ui->actionvcdshow->setEnabled(!checked);
+    ui->actionSaveVCD->setEnabled(!checked);
 }
 
 void MainWindow::on_actionstep_triggered(){
