@@ -12,7 +12,7 @@ section "Debugging"
 option "gdb" g "GDB Server listening on TCP Port" argoptional default="1234" short optional
 
 option "vcd" v "Record Value Change Dump for GTK wave (works like a Logic Analyzer)" optional
-option "vcd-file" f "File for Value Change Dump output" string default="/var/run/spicsim.vcd" optional
+option "vcd-file" f "File for Value Change Dump output" string default="/tmp/spicsim.vcd" optional
 option "vcd-extra" x "Dump extra values" optional
 option "vcd-flush" - "VCD File flushing periond (in us)" default="1000000" int optional
 
