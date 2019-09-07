@@ -22,8 +22,7 @@ Replacement for the [SPiCboard](https://www4.cs.fau.de/Lehre/SS19/V_SPIC/SPiCboa
 
 Make sure to checkout the *simavr* submodule and run Make
 
-    git submodule init
-    git submodule update
+    git submodule update --init --recursive 
     make
 
 

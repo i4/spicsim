@@ -4,6 +4,7 @@ SOURCES=$(sort $(wildcard *.c) $(ARGPASER).c)
 QSPICBOARDDIR=QSPiCboard
 QSPICBOARDPRO=libQSPiCboard.pro
 LIBQSPICBOARD=libQSPiCboard.a
+RELEASE=1
 
 override SIMAVR=simavr/simavr
 IPATH=.
@@ -21,14 +22,11 @@ $(QSPICBOARDDIR)/Makefile: $(QSPICBOARDDIR)/$(QSPICBOARDPRO)
 	cd $(QSPICBOARDDIR) && qmake -makefile $(QSPICBOARDPRO)
 
 $(QSPICBOARDDIR)/$(LIBQSPICBOARD): $(QSPICBOARDDIR)/Makefile $(wildcard $(QSPICBOARDDIR)/*.cpp) $(wildcard $(QSPICBOARDDIR)/*.h) $(wildcard $(QSPICBOARDDIR)/*.ui)
-	make -C $(QSPICBOARDDIR)
+	$(MAKE) -C $(QSPICBOARDDIR)
 
-$(SIMAVR):
-	@echo GIT SUBMODULE $@
-	$(E)git submodule update --init --recursive 
-
-$(LIBSIMAVR): $(SIMAVR) FORCE
+$(LIBSIMAVR): FORCE
 	$(MAKE) -C simavr build-simavr
+	$(E)rm $(SIMAVR)/${OBJ}/libsimavr.so $(SIMAVR)/${OBJ}/libsimavr.so.1
 
 $(ARGPASER).o: $(ARGPASER).c $(ARGPASER).h
 
@@ -39,11 +37,12 @@ $(ARGPASER).c $(ARGPASER).h: options.ggo
 $(OBJ)/$(TARGET).elf: $(OBJECTS) $(QSPICBOARDDIR)/$(LIBQSPICBOARD) $(LIBSIMAVR)
 
 ${TARGET}: $(OBJ)/$(TARGET).elf
-	@echo "LN $< -> $@"
-	$(E)ln -f -s $< $@
+	@echo "STRIP $< -> $@"
+	$(E)strip -o $@ $<
 
 FORCE:
 
 clean: clean-${OBJ}
-	make -C $(QSPICBOARDDIR) clean
+	$(MAKE) -C $(QSPICBOARDDIR) clean
+	$(MAKE) -C simavr clean
 	rm -rf *.a ${TARGET} *.vcd $(ARGPASER).c $(ARGPASER).h
