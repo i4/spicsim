@@ -10,4 +10,5 @@ spicsim:
   script:
     - make
   artifacts:
-    - spicsim
+    paths:
+      - spicsim
