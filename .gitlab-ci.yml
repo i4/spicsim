@@ -1,0 +1,8 @@
+before_script:
+  - apt-get update -qq && apt-get install -y -qq qt5-default
+
+spicsim:
+  script:
+    - git submodule update --init --recursive
+    - make
+
