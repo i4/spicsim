@@ -36,7 +36,7 @@
     <normaloff>:/icons/i4logo.svg</normaloff>:/icons/i4logo.svg</iconset>
   </property>
   <property name="locale">
-   <locale language="English" country="Europe"/>
+   <locale language="English" country="Germany"/>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>
