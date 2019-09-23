@@ -1,4 +1,6 @@
 TARGET=spicsim
+INSTALLPATHLOCAL=/usr/bin/spicsim
+INSTALLPATHCIP=/proj/i4spic/bin/spicsim
 ARGPASER=cmdline
 SOURCES=$(sort $(wildcard *.c) $(ARGPASER).c)
 QSPICBOARDDIR=QSPiCboard
@@ -39,6 +41,14 @@ $(OBJ)/$(TARGET).elf: $(OBJECTS) $(QSPICBOARDDIR)/$(LIBQSPICBOARD) $(LIBSIMAVR)
 ${TARGET}: $(OBJ)/$(TARGET).elf
 	@echo "STRIP $< -> $@"
 	$(E)strip -o $@ $<
+
+install: ${TARGET}
+	@echo INSTALL   $(INSTALLPATHLOCAL)
+	@install -m 0755 $< $(INSTALLPATHLOCAL)
+
+install-cip: ${TARGET}
+	@echo INSTALL   $(INSTALLPATHCIP)
+	@install -g i4spic -m 0775 $< $(INSTALLPATHCIP)
 
 FORCE:
 

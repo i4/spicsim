@@ -20,11 +20,22 @@ Replacement for the [SPiCboard](https://www4.cs.fau.de/Lehre/SS19/V_SPIC/SPiCboa
 
 ## Build
 
-Make sure to checkout the *simavr* submodule and run Make
+Make sure to checkout the *simavr* submodule and run *Make*
 
-    git submodule update --init --recursive 
+    git submodule update --init --recursive
     make
 
+### Install
+
+Install on local machine via
+
+    sudo make install
+
+### Distribute in CIP
+
+Install in CIP after build with
+
+    make install-cip
 
 ## Usage
 
