@@ -35,6 +35,11 @@ void vcd_stop() {
     std::cout << "VCD stops" << std::endl;
 }
 
+bool vcd_init() {
+    std::cout << "VCD initializing" << std::endl;
+    return true;
+}
+
 double led_lightness(enum LED led){
     double x = (led * 1337.0) / 13.0;
     return x - floor(x);

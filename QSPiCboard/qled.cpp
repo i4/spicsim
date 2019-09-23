@@ -5,6 +5,7 @@
 static QColor borderColor(100, 100, 100);
 
 QLED::QLED(QWidget *parent) : QWidget(parent) {
+    fillColor.setAlphaF(1.0);
 }
 
 void QLED::setColor(enum QLED::Color color){

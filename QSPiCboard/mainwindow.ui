@@ -655,9 +655,226 @@
     <zorder>seg0</zorder>
     <zorder>seg1</zorder>
    </widget>
+   <widget class="QWidget" name="coffee">
+    <attribute name="title">
+     <string>Coffee Machine</string>
+    </attribute>
+    <widget class="QLabel" name="coffeeBackground">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>490</width>
+       <height>321</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="skins.qrc">:/skins/coffee-back.svg</pixmap>
+     </property>
+    </widget>
+    <widget class="QLabel" name="coffeeWater">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>490</width>
+       <height>321</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="skins.qrc">:/skins/coffee-water.svg</pixmap>
+     </property>
+    </widget>
+    <widget class="QLabel" name="coffeeForeground">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>490</width>
+       <height>321</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="skins.qrc">:/skins/coffee-front.svg</pixmap>
+     </property>
+    </widget>
+    <widget class="QIMG" name="coffeeHeat" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>490</width>
+       <height>321</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="coffeeWaterSwitch">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>18</y>
+       <width>41</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Water</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="coffeeButton">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>70</y>
+       <width>51</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>On/Off</string>
+     </property>
+    </widget>
+    <widget class="QLED" name="coffeeStatusStandby" native="true">
+     <property name="geometry">
+      <rect>
+       <x>465</x>
+       <y>10</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="coffeeStatusActive" native="true">
+     <property name="geometry">
+      <rect>
+       <x>465</x>
+       <y>30</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLED" name="coffeeStatusWater" native="true">
+     <property name="geometry">
+      <rect>
+       <x>465</x>
+       <y>50</y>
+       <width>20</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="coffeeStatusStandbyLabel">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>10</y>
+       <width>45</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>6</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Standby</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="coffeeStatusActiveLabel">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>30</y>
+       <width>45</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>6</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Active</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="coffeeStatusWaterLabel">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>50</y>
+       <width>45</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>6</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>No Water</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <zorder>coffeeBackground</zorder>
+    <zorder>coffeeHeat</zorder>
+    <zorder>coffeeStatusWater</zorder>
+    <zorder>coffeeStatusStandby</zorder>
+    <zorder>coffeeStatusActive</zorder>
+    <zorder>coffeeWater</zorder>
+    <zorder>coffeeForeground</zorder>
+    <zorder>coffeeStatusActiveLabel</zorder>
+    <zorder>coffeeStatusStandbyLabel</zorder>
+    <zorder>coffeeStatusWaterLabel</zorder>
+    <zorder>coffeeButton</zorder>
+    <zorder>coffeeWaterSwitch</zorder>
+   </widget>
    <widget class="QWidget" name="trafficlight">
     <attribute name="title">
-     <string>Ampel</string>
+     <string>Traffic Light</string>
     </attribute>
     <widget class="QLED" name="trafficLightCarRed0" native="true">
      <property name="geometry">
@@ -689,7 +906,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="background">
+    <widget class="QLabel" name="rafficBackground">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -814,7 +1031,7 @@
       <string>Interference</string>
      </property>
     </widget>
-    <zorder>background</zorder>
+    <zorder>rafficBackground</zorder>
     <zorder>trafficLightCarRed0</zorder>
     <zorder>trafficLightCarYellow0</zorder>
     <zorder>trafficLightCarGreen0</zorder>
@@ -828,11 +1045,6 @@
     <zorder>trafficLightSeg1</zorder>
     <zorder>trafficLightBtn0</zorder>
     <zorder>trafficLightBtn1</zorder>
-   </widget>
-   <widget class="QWidget" name="coffee">
-    <attribute name="title">
-     <string>Kaffeemaschine</string>
-    </attribute>
    </widget>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -1095,6 +1307,12 @@
    <class>QOLED</class>
    <extends>QOpenGLWidget</extends>
    <header>qoled.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QIMG</class>
+   <extends>QWidget</extends>
+   <header>qimg.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>

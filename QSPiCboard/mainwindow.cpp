@@ -12,8 +12,8 @@
 
 enum SKINS {
     SKIN_SPICBOARD = 0,
-    SKIN_TRAFFICLIGHT = 1,
-    SKIN_COFFEE = 2
+    SKIN_COFFEE = 1,
+    SKIN_TRAFFICLIGHT = 2
 };
 
 QString MainWindow::getSaveFileName(const QString & title, const std::map<QString,QString> & filters, const QString defaultSuffix, const QString target){
@@ -79,6 +79,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (args_info.display_given)
         ui->actiondisplay->toggle();
+
+    // Skin Coffee Machine
+    ui->coffeeHeat->setImage(":/skins/coffee-heat.svg");
+    ui->coffeeStatusStandby->setColor(QLED::BLUE);
+    ui->coffeeStatusStandby->setSize(10);
+    ui->coffeeStatusActive->setColor(QLED::GREEN);
+    ui->coffeeStatusActive->setSize(10);
+    ui->coffeeStatusWater->setColor(QLED::RED);
+    ui->coffeeStatusWater->setSize(10);
 
     // Skin Traffic Light
     ui->trafficLightCarRed0->setColor(QLED::RED);
@@ -153,6 +162,10 @@ void MainWindow::on_update() {
             break;
 
         case SKIN_COFFEE:
+            ui->coffeeStatusWater->setLightness(led_lightness(LED_RED0));
+            ui->coffeeHeat->setLightness(led_lightness(LED_YELLOW0));
+            ui->coffeeStatusActive->setLightness(led_lightness(LED_GREEN0));
+            ui->coffeeStatusStandby->setLightness(led_lightness(LED_BLUE0));
             break;
 
         default: // SKIN_SPICBOARD
@@ -403,6 +416,20 @@ void MainWindow::on_actionstep_triggered(){
 void MainWindow::on_skin_currentChanged(int index){
     ui->actionAdvanced->setEnabled(index == SKIN_SPICBOARD);
     ui->actiondisplay->setEnabled(index == SKIN_SPICBOARD);
+    if (index != SKIN_SPICBOARD && btnHold){
+        btnHold = false;
+        ui->btnHold->setChecked(false);
+        ui->btnUser->setChecked(false);
+        if (ui->btn0->isChecked())
+            ui->btn0->released();
+        if (ui->btn1->isChecked())
+            ui->btn1->released();
+    }
+    if (index == SKIN_COFFEE){
+        ui->coffeeWater->setVisible(true);
+        if (!ui->coffeeWaterSwitch->isChecked())
+            ui->coffeeWaterSwitch->click();
+    }
 }
 
 void MainWindow::on_trafficLightBtn0_pressed() {
@@ -419,4 +446,17 @@ void MainWindow::on_trafficLightBtn1_pressed() {
 
 void MainWindow::on_trafficLightBtn1_released() {
     button_set(BUTTON1, BUTTON_RELEASED);
+}
+
+void MainWindow::on_coffeeButton_pressed() {
+    button_set(BUTTON0, BUTTON_PRESSED);
+}
+
+void MainWindow::on_coffeeButton_released() {
+    button_set(BUTTON0, BUTTON_RELEASED);
+}
+
+void MainWindow::on_coffeeWaterSwitch_clicked(bool checked) {
+    ui->coffeeWater->setVisible(checked);
+    button_set(BUTTON1, checked ? BUTTON_RELEASED : BUTTON_PRESSED);
 }

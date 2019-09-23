@@ -55,6 +55,11 @@ private slots:
     void on_trafficLightBtn0_released();
     void on_trafficLightBtn1_pressed();
     void on_trafficLightBtn1_released();
+    void on_coffeeWaterSwitch_clicked(bool checked);
+
+    void on_coffeeButton_pressed();
+
+    void on_coffeeButton_released();
 
 private:
     Ui::MainWindow *ui;

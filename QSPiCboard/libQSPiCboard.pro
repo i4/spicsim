@@ -16,6 +16,7 @@ CONFIG += staticlib
 SOURCES += \
         mainwindow.cpp \
         qled.cpp \
+        qimg.cpp \
         qsevenseg.cpp \
         qoled.cpp \
         spicsimlink.cpp
@@ -23,6 +24,7 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
         qled.h \
+        qimg.h \
         qsevenseg.h \
         qoled.h \
         spicsimlink.h

@@ -29,14 +29,16 @@ SOURCES += \
         mainwindow.cpp \
         qled.cpp \
         qsevenseg.cpp \
-        qoled.cpp
+        qoled.cpp \
+        qimg.cpp
 
 HEADERS += \
         mainwindow.h \
         qled.h \
         qsevenseg.h \
         qoled.h \
-        spicsimlink.h
+        qimg.h
+        spicsimlink.h \
 
 INCLUDEPATH += ..
 

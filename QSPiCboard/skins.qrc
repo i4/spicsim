@@ -1,6 +1,9 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-<qresource>
-    <file>skins/trafficlight.svg</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>skins/trafficlight.svg</file>
+        <file>skins/coffee-water.svg</file>
+        <file>skins/coffee-heat.svg</file>
+        <file>skins/coffee-front.svg</file>
+        <file>skins/coffee-back.svg</file>
+    </qresource>
 </RCC>
