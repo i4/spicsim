@@ -52,6 +52,9 @@ MainWindow::MainWindow(QWidget *parent) :
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->mainToolBar->insertWidget(ui->actionhelp, spacer);
 
+    // Always on top
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+
     // Skin SPiCboard
     ui->oled->hide();
     ui->advanced->hide();
