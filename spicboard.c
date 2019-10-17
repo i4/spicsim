@@ -205,9 +205,9 @@ bool spicboard_load(const char * fname){
 		if (args_info.gdb_given) {
 			fprintf(stderr, "Starting GDB on port %hd...\n", avr->gdb_port);
 			avr_gdb_init(avr);
-		    spicboard_pause();
+			spicboard_pause();
 		} else {
-		    spicboard_run();
+			spicboard_run();
 		}
 
 		if (args_info.vcd_given) {
@@ -217,7 +217,6 @@ bool spicboard_load(const char * fname){
 				fprintf(stderr, "Not able to start Value Change Dump recording...\n");
 		}
 
-		spicboard_run();
 		return pthread_create(&avr_thread, NULL, avr_run_thread, avr) == 0;
 	} else {
 		fprintf(stderr, "AVR '%s' not known\n", f.mmcu);
