@@ -201,12 +201,13 @@ bool spicboard_load(const char * fname){
 
 		ssd1306_init();
 
-		// even if not setup at startup, activate gdb if crashing
 		avr->gdb_port = args_info.gdb_arg;
 		if (args_info.gdb_given) {
 			fprintf(stderr, "Starting GDB on port %hd...\n", avr->gdb_port);
-			//avr->state = cpu_Stopped;
 			avr_gdb_init(avr);
+		    spicboard_pause();
+		} else {
+		    spicboard_run();
 		}
 
 		if (args_info.vcd_given) {
