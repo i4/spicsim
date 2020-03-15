@@ -4,6 +4,7 @@
 
 
 QOLED::QOLED(QWidget *parent) : QWidget(parent) {
+    setAttribute(Qt::WA_OpaquePaintEvent);
 }
 
 QOLED::~QOLED(){
