@@ -1,17 +1,16 @@
 #ifndef QOLED_H
 #define QOLED_H
 
-#include <QOpenGLWidget>
+#include <QWidget>
 
-class QOLED : public QOpenGLWidget
+class QOLED : public QWidget
 {
 public:
     QOLED(QWidget *parent);
     ~QOLED();
 
 protected:
-    void initializeGL();
-    void paintGL();
+    void paintEvent(QPaintEvent *event) override;
 };
 
 #endif // QOLED_H

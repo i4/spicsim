@@ -12,7 +12,7 @@ override SIMAVR=simavr/simavr
 IPATH=.
 IPATH+=$(SIMAVR)/sim
 
-LDFLAGS += -lpthread -lm -L$(QSPICBOARDDIR) -lQSPiCboard -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lstdc++
+LDFLAGS += -lpthread -lm -L$(QSPICBOARDDIR) -lQSPiCboard -lQt5Widgets -lQt5Gui -lQt5Core -lstdc++
 
 all: obj $(TARGET)
 

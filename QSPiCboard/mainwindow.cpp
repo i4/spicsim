@@ -368,7 +368,7 @@ void MainWindow::on_oledScreenshot_clicked() {
     QFileInfo fileInfo(spicboard_filepath());
     QString fileName = getSaveFileName("Save OLED-Display Screenshot", filters, ".png", fileInfo.canonicalPath() + "/" + fileInfo.baseName() + "_oled.png");
     if (fileName != nullptr){
-        ui->oledGL->grabFramebuffer().save(fileName);
+        ui->oledGL->grab().save(fileName);
     }
 }
 
