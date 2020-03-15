@@ -204,7 +204,6 @@ void MainWindow::on_update() {
 
     ui->actionpause->setChecked(spicboard_is_paused());
     ui->statusBar->showMessage(spicboard_state_string());
-    update();
 }
 
 void MainWindow::on_btn0_pressed() {
@@ -293,9 +292,6 @@ void MainWindow::on_actionAdvanced_toggled(bool value) {
         ui->btnUser->setCheckable(false);
         ui->btn0->setCheckable(false);
         ui->btn1->setCheckable(false);
-        ui->btnUser->update();
-        ui->btn0->update();
-        ui->btn1->update();
     }
 }
 
