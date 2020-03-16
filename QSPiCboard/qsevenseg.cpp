@@ -10,6 +10,9 @@ QSevenSeg::QSevenSeg(QWidget *parent) : QWidget(parent), border(100, 100, 100), 
 
 void QSevenSeg::setSegment(enum QSevenSeg::Segment segment, qreal value){
     if (segment < SEGMENTS){
+        if (segments[segment].alphaF() == value) {
+            return;
+        }
         segments[segment].setAlphaF(value);
         update();
     }
@@ -19,11 +22,13 @@ void QSevenSeg::setSize(int size, int offset, bool showBorder){
     this->size = size;
     this->offset = offset;
     this->showBorder = showBorder;
+    update();
 }
 
 void QSevenSeg::setColor(QColor fill, QColor border){
     this->fill = fill;
     this->border = border;
+    update();
 }
 
 void QSevenSeg::paintEvent(QPaintEvent *) {

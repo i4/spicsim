@@ -15,14 +15,20 @@ void QLED::setColor(enum QLED::Color color){
         case BLUE: fillColor.setRgb(0x19, 0x76, 0xd2); break;
         case YELLOW: fillColor.setRgb(0xfb, 0xc0, 0x2d); break;
     }
+    update();
 }
 
 void QLED::setSize(int size){
     this->size = size;
+    update();
 }
 
 void QLED::setLightness(qreal value){
+    if (fillColor.alphaF() == value) {
+        return;
+    }
     fillColor.setAlphaF(value);
+    update();
 }
 
 void QLED::paintEvent(QPaintEvent *) {
