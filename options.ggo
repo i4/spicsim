@@ -19,7 +19,7 @@ option "vcd-flush" - "VCD File flushing periond (in us)" default="1000000" int o
 
 section "User Interface Mode"
 
-option "refresh" r "Refresh rate (in Hz)" default="60" short optional
+option "refresh" r "Refresh rate (in Hz)" default="30" short optional
 option "advanced" a "Show advanced UI with additional information" optional
 option "display" d "Enable SSD1306 OLED Display" optional
 
