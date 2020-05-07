@@ -321,9 +321,13 @@ void MainWindow::on_actionload_triggered() {
 void MainWindow::on_actionvcdshow_triggered() {
     QFileInfo fileInfoTmp(args_info.vcd_file_arg);
     if (fileInfoTmp.exists()){
+        QStringList arguments;
+        arguments << fileInfoTmp.absoluteFilePath();
+        arguments << "--rcvar" << "do_initial_zoom_fit 1";
+
         QProcess process;
         process.setProgram("gtkwave");
-        process.setArguments(QStringList(fileInfoTmp.absoluteFilePath()));
+        process.setArguments(arguments);
         process.startDetached();
     } else {
         QMessageBox::warning(this, "Value Change Dump View", "No (temporary) value change dump file available!");
