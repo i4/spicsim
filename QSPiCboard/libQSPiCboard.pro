@@ -14,6 +14,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += staticlib
 
 SOURCES += \
+        fix_vcd.cpp \
         mainwindow.cpp \
         qled.cpp \
         qimg.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
         spicsimlink.cpp
 
 HEADERS += \
+        fix_vcd.h \
         mainwindow.h \
         qled.h \
         qimg.h \

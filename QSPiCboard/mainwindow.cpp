@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "fix_vcd.h"
 #include "spicsimlink.h"
 
 #include <QDesktopServices>
@@ -321,8 +322,16 @@ void MainWindow::on_actionload_triggered() {
 void MainWindow::on_actionvcdshow_triggered() {
     QFileInfo fileInfoTmp(args_info.vcd_file_arg);
     if (fileInfoTmp.exists()){
+        ///  @todo  rheinfels  Actually fix avrsim instead of using this fiddly string replace fix
+        fileInfoTmp.makeAbsolute();
+        QString path_fixed = fileInfoTmp.dir().filePath( fileInfoTmp.baseName() + "-fixed." + fileInfoTmp.completeSuffix() );
+        QString vcd_path = fileInfoTmp.absoluteFilePath(); // Revert to old file if fix fails
+        if( fix_vcd( fileInfoTmp.absoluteFilePath(), path_fixed ) == 0 ) {
+            vcd_path = path_fixed;
+        }
+
         QStringList arguments;
-        arguments << fileInfoTmp.absoluteFilePath();
+        arguments << vcd_path;
         arguments << "--rcvar" << "do_initial_zoom_fit 1";
 
         QProcess process;

@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        fix_vcd.cpp \
         main.cpp \
         mainwindow.cpp \
         qled.cpp \
@@ -33,6 +34,7 @@ SOURCES += \
         qimg.cpp
 
 HEADERS += \
+        fix_vcd.h \
         mainwindow.h \
         qled.h \
         qsevenseg.h \
