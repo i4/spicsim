@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include "sim_avr.h"
+#include "sim_time.h"
 #include "avr_ioport.h"
 #include "avr_spi.h"
 #include "avr_adc.h"
@@ -112,7 +113,28 @@ const char * spicboard_filepath(void){
 
 const char * spicboard_state_string(void){
 	static char status[1024];
-	return snprintf(status, sizeof(status) - 1, "%s: %'llu cycles (%s)", mc_status, (unsigned long long)spicboard_cycles(), cpu_state_str[spicboard_state()]) > 0 ? status : NULL;
+
+	// timeliness
+	static int total, current, counter = 0;
+	if (counter++ >= 10) {
+		uint64_t deadline = avr_cycles_to_nsec(avr, avr->cycle);
+		uint64_t runtime = avr_get_time_stamp(avr);
+
+		total = (int) (runtime > 0 ? (deadline * 100) / runtime : 0);
+
+		static uint64_t deadline_ref = 0;
+		static uint64_t runtime_ref = 0;
+
+		uint64_t deadline_delta = (deadline - deadline_ref);
+		uint64_t runtime_delta = (runtime - runtime_ref);
+		current = (int) (runtime_delta > 0 ? (deadline_delta * 100) / runtime_delta : 0);
+
+		deadline_ref = deadline;
+		runtime_ref = runtime;
+		counter = 0;
+	}
+
+	return snprintf(status, sizeof(status) - 1, "%s: %'llu cycles (%s); current simulation speed %d%% (total %d%%)", mc_status, (unsigned long long)spicboard_cycles(), cpu_state_str[spicboard_state()], current, total) > 0 ? status : NULL;
 }
 
 static void debug_log(struct avr_t *avr, const int level, const char *format, va_list ap){
