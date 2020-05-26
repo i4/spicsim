@@ -1238,6 +1238,12 @@
    <property name="shortcut">
     <string>Ctrl+R</string>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionScreenshot">
    <property name="icon">
