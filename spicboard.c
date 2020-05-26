@@ -134,7 +134,7 @@ const char * spicboard_state_string(void){
 		counter = 0;
 	}
 
-	return snprintf(status, sizeof(status) - 1, "%s: %'llu cycles (%s); current simulation speed %d%% (total %d%%)", mc_status, (unsigned long long)spicboard_cycles(), cpu_state_str[spicboard_state()], current, total) > 0 ? status : NULL;
+	return snprintf(status, sizeof(status) - 1, "%s: %'llu cycles (%s); current sim speed %d%% (total %d%%)", mc_status, (unsigned long long)spicboard_cycles(), cpu_state_str[spicboard_state()], current, total) > 0 ? status : NULL;
 }
 
 static void debug_log(struct avr_t *avr, const int level, const char *format, va_list ap){
