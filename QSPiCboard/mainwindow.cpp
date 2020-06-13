@@ -108,6 +108,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->trafficLightSeg0->setSize(1, 0, false);
     ui->trafficLightSeg1->setSize(1, 0, false);
 
+    // Status Bar
+    QFont font = qApp->font();
+    font.setPixelSize(9);
+    font.setItalic(true);
+    ui->statusBar->setFont(font);
+
     // General
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_update()));

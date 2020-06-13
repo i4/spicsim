@@ -9,7 +9,11 @@ ssd1306_t oled;
 
 int main(int argc, char *argv[])
 {
+    QApplication::setAttribute(Qt::AA_Use96Dpi);
     QApplication a(argc, argv);
+    QFont font = qApp->font();
+    font.setPixelSize(12);
+    qApp->setFont(font);
     MainWindow w;
     w.show();
 
